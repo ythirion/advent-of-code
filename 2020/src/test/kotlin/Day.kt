@@ -6,7 +6,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 
-abstract class Day(private val day: Int) {
+abstract class Day(day: Int) {
     //region Boolean
     protected fun Boolean.toInt() = if (this) 1 else 0
     //endregion
@@ -14,7 +14,7 @@ abstract class Day(private val day: Int) {
     //region Int, Long
     protected fun Int.divisible(other: Int) = this % other == 0
     protected fun Long.toBinaryString(length: Int): String {
-        var bin = StringBuilder(this.toString(2))
+        val bin = StringBuilder(this.toString(2))
         while (bin.length < length) {
             bin.insert(0, '0')
         }
@@ -100,16 +100,16 @@ abstract class Day(private val day: Int) {
     //region Compute functions
     private val input = Day::class.java.classLoader.getResource("day$day.txt")
 
-    protected fun <R> computeResult(answer: (input: List<String>) -> R): R = answer(getInput());
-    protected fun <R> computeLongResult(answer: (input: List<Long>) -> R): R = answer(getInput().map { it.toLong() });
-    protected fun <R> computeIntResult(answer: (input: List<Int>) -> R): R = answer(getInput().map { it.toInt() });
-    protected fun <R> computeIntSeparatedResult(answer: (input: List<Int>) -> R): R = answer(getInputAsString().split(',').map { it.toInt() });
-    protected fun <R> computeStringResult(answer: (input: String) -> R): R = answer(getInputAsString());
-    protected fun <R> computeStringSeparatedLinesResult(answer: (input: List<String>) -> R): R = answer(getInputAsSeparatedLines());
+    protected fun <R> computeResult(answer: (input: List<String>) -> R): R = answer(getInput())
+    protected fun <R> computeLongResult(answer: (input: List<Long>) -> R): R = answer(getInput().map { it.toLong() })
+    protected fun <R> computeIntResult(answer: (input: List<Int>) -> R): R = answer(getInput().map { it.toInt() })
+    protected fun <R> computeIntSeparatedResult(answer: (input: List<Int>) -> R): R = answer(getInputAsString().split(',').map { it.toInt() })
+    protected fun <R> computeStringResult(answer: (input: String) -> R): R = answer(getInputAsString())
+    protected fun <R> computeStringSeparatedLinesResult(answer: (input: List<String>) -> R): R = answer(getInputAsSeparatedLines())
     protected fun lineSeparator() = "\n"
 
     private fun getInput() = Files.readAllLines(Path.of(Objects.requireNonNull(input).toURI()))
-    private fun getInputAsString() = Files.readString(Path.of(Objects.requireNonNull(input).toURI()));
+    private fun getInputAsString() = Files.readString(Path.of(Objects.requireNonNull(input).toURI()))
     private fun getInputAsSeparatedLines() = getInputAsString().split("\n\n")
     //endregion
 }

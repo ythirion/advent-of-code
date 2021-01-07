@@ -19,7 +19,7 @@ class Day2 : Day(2) {
     ): Int =
             lines.map { extractPassword(it) }
                     .filter { isValid(it) }
-                    .count();
+                    .count()
 
     @Test
     fun exercise1() = Assertions.assertEquals(622, computeResult { lines ->
