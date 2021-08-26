@@ -8,6 +8,7 @@ class Day12 : Day(12) {
     private val left = 'L'
     private val cardinalPoints = CardinalPoint.values()
 
+
     private enum class CardinalPoint(val deltaX: Int, val deltaY: Int) { N(0, 1), E(1, 0), S(0, -1), W(-1, 0) }
     private data class Point2d(val x: Int, val y: Int)
     private data class NavigationInstruction(val action: Char, val value: Int)

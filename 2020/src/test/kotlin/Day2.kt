@@ -2,6 +2,8 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class Day2 : Day(2) {
+    private class Password(val x: Int, val y: Int, val character: Char, val value: String)
+
     private fun extractPassword(line: String): Password {
         val splitLine = line.split(' ')
 
@@ -11,15 +13,8 @@ class Day2 : Day(2) {
                 splitLine[2].substringBefore(':'))
     }
 
-    private class Password(val x: Int, val y: Int, val character: Char, val value: String)
-
-    private fun countValidPasswords(
-            lines: List<String>,
-            isValid: (password: Password) -> Boolean,
-    ): Int =
-            lines.map { extractPassword(it) }
-                    .filter { isValid(it) }
-                    .count()
+    private fun countValidPasswords(lines: List<String>, isValid: (password: Password) -> Boolean): Int =
+        lines.map { extractPassword(it) }.count { isValid(it) }
 
     @Test
     fun exercise1() = Assertions.assertEquals(622, computeResult { lines ->
@@ -31,6 +26,7 @@ class Day2 : Day(2) {
 
     @Test
     fun exercise2() = Assertions.assertEquals(263, computeResult { lines ->
-        countValidPasswords(lines) { (it.value[it.x - 1] + it.value[it.y - 1]).count(it.character) == 1 }
+        countValidPasswords(lines) { (it.value[it.x - 1] + it.value[it.y - 1])
+            .count(it.character) == 1 }
     })
 }
