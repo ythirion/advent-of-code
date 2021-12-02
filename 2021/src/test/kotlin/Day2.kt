@@ -3,36 +3,41 @@ import org.junit.jupiter.api.Test
 
 class Day2 : Day(2, "Dive!") {
     data class Location(val horizontalPosition: Int = 0, val depth: Int = 0, val aim: Int = 0)
+    data class Instruction(val text: String, val x: Int)
 
-    private fun String.toInstruction(): Pair<String, Int> =
-        Pair(this.splitWords().first(), this.splitWords().last().toInt())
-
-    private fun newLocation(currentLocation: Location, line: String): Location {
-        val instruction = line.toInstruction()
-        return when (instruction.first) {
-            "down" -> currentLocation.copy(depth = currentLocation.depth + instruction.second)
-            "up" -> currentLocation.copy(depth = currentLocation.depth - instruction.second)
-            else -> currentLocation.copy(horizontalPosition = currentLocation.horizontalPosition + instruction.second)
+    private fun Instruction.newLocation(from: Location): Location {
+        return when (this.text) {
+            "down" -> from.copy(depth = from.depth + this.x)
+            "up" -> from.copy(depth = from.depth - this.x)
+            else -> from.copy(horizontalPosition = from.horizontalPosition + this.x)
         }
     }
 
-    private fun newLocationWithAim(currentLocation: Location, line: String): Location {
-        val instruction = line.toInstruction()
-        return when (instruction.first) {
-            "down" -> currentLocation.copy(aim = currentLocation.aim + instruction.second)
-            "up" -> currentLocation.copy(aim = currentLocation.aim - instruction.second)
-            else -> currentLocation.copy(
-                horizontalPosition = currentLocation.horizontalPosition + instruction.second,
-                depth = currentLocation.depth + (currentLocation.aim * instruction.second)
+    private fun Instruction.newLocationWithAim(from: Location): Location {
+        return when (this.text) {
+            "down" -> from.copy(aim = from.aim + this.x)
+            "up" -> from.copy(aim = from.aim - this.x)
+            else -> from.copy(
+                horizontalPosition = from.horizontalPosition + this.x,
+                depth = from.depth + (from.aim * this.x)
             )
         }
     }
+
+    private fun String.toInstruction(): Instruction =
+        Instruction(this.splitWords().first(), this.splitWords().last().toInt())
+
+    private fun newLocation(currentLocation: Location, line: String): Location =
+        line.toInstruction().newLocation(currentLocation)
+
+    private fun newLocationWithAim(currentLocation: Location, line: String): Location =
+        line.toInstruction().newLocationWithAim(currentLocation)
 
     private fun calculateNewLocation(
         lines: List<String>,
         newLocation: (Location, String) -> Location
     ): Int {
-        var currentLocation = Location(0, 0)
+        var currentLocation = Location()
         lines.forEach { currentLocation = newLocation(currentLocation, it) }
         return currentLocation.horizontalPosition * currentLocation.depth
     }
