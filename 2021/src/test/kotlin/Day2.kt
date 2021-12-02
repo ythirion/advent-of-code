@@ -2,23 +2,25 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class Day2 : Day(2, "Dive!") {
-    data class Location(val horizontalPosition: Int = 0, val depth: Int = 0, val aim: Int = 0)
+    data class Position(val horizontal: Int = 0, val depth: Int = 0, val aim: Int = 0)
     data class Instruction(val text: String, val x: Int)
 
-    private fun Instruction.newLocation(from: Location): Location {
+    private fun Position.result() = this.horizontal * this.depth
+
+    private fun Instruction.newPosition(from: Position): Position {
         return when (this.text) {
             "down" -> from.copy(depth = from.depth + this.x)
             "up" -> from.copy(depth = from.depth - this.x)
-            else -> from.copy(horizontalPosition = from.horizontalPosition + this.x)
+            else -> from.copy(horizontal = from.horizontal + this.x)
         }
     }
 
-    private fun Instruction.newLocationWithAim(from: Location): Location {
+    private fun Instruction.newPositionWithAim(from: Position): Position {
         return when (this.text) {
             "down" -> from.copy(aim = from.aim + this.x)
             "up" -> from.copy(aim = from.aim - this.x)
             else -> from.copy(
-                horizontalPosition = from.horizontalPosition + this.x,
+                horizontal = from.horizontal + this.x,
                 depth = from.depth + (from.aim * this.x)
             )
         }
@@ -27,30 +29,24 @@ class Day2 : Day(2, "Dive!") {
     private fun String.toInstruction(): Instruction =
         Instruction(this.splitWords().first(), this.splitWords().last().toInt())
 
-    private fun newLocation(currentLocation: Location, line: String): Location =
-        line.toInstruction().newLocation(currentLocation)
-
-    private fun newLocationWithAim(currentLocation: Location, line: String): Location =
-        line.toInstruction().newLocationWithAim(currentLocation)
-
     private fun calculateNewLocation(
         lines: List<String>,
-        newLocation: (Location, String) -> Location
+        newLocation: (Position, String) -> Position
     ): Int {
-        var currentLocation = Location()
-        lines.forEach { currentLocation = newLocation(currentLocation, it) }
-        return currentLocation.horizontalPosition * currentLocation.depth
+        var position = Position()
+        lines.forEach { position = newLocation(position, it) }
+        return position.result()
     }
 
     @Test
     fun exercise1() =
         Assertions.assertEquals(1690020, computeResult {
-            calculateNewLocation(it) { current, line -> newLocation(current, line) }
+            calculateNewLocation(it) { position, line -> line.toInstruction().newPosition(position) }
         })
 
     @Test
     fun exercise2() =
         Assertions.assertEquals(1408487760, computeResult {
-            calculateNewLocation(it) { current, line -> newLocationWithAim(current, line) }
+            calculateNewLocation(it) { position, line -> line.toInstruction().newPositionWithAim(position) }
         })
 }
