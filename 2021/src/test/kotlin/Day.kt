@@ -108,6 +108,11 @@ abstract class Day(day: Int, name: String) {
     private val input = Day::class.java.classLoader.getResource("day$day.txt")
 
     protected fun <R> computeResult(answer: (input: List<String>) -> R): R = answer(getInput())
+    protected fun <TInput, R> computeResult(
+        transform: (input: List<String>) -> List<TInput>,
+        answer: (input: List<TInput>) -> R
+    ): R = answer(transform(getInput()))
+
     protected fun <R> computeLongResult(answer: (input: List<Long>) -> R): R = answer(getInput().map { it.toLong() })
     protected fun <R> computeIntResult(answer: (input: List<Int>) -> R): R = answer(getInput().map { it.toInt() })
     protected fun <R> computeIntSeparatedResult(answer: (input: List<Int>) -> R): R =

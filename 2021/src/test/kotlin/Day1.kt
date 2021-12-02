@@ -12,9 +12,11 @@ class Day1 : Day(1, "Sonar Sweep") {
 
     @Test
     fun exercise1() =
-        Assertions.assertEquals(1393, computeResult { `number of times a depth measurement increases`(it, 1) })
+        Assertions.assertEquals(1393,
+            computeResult { `number of times a depth measurement increases`(it, 1) })
 
     @Test
     fun exercise2() =
-        Assertions.assertEquals(1359, computeResult { `number of times a depth measurement increases`(it, 3) })
+        Assertions.assertEquals(1359,
+            computeResult { `number of times a depth measurement increases`(it, 3) })
 }

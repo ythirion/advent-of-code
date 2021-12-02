@@ -5,6 +5,9 @@ class Day2 : Day(2, "Dive!") {
     data class Position(val horizontal: Int = 0, val depth: Int = 0, val aim: Int = 0)
     data class Instruction(val text: String, val x: Int)
 
+    private fun String.toInstruction(): Instruction =
+        Instruction(this.splitWords().first(), this.splitWords().last().toInt())
+
     private fun Position.result() = this.horizontal * this.depth
 
     private fun Instruction.newPosition(from: Position): Position {
@@ -26,27 +29,24 @@ class Day2 : Day(2, "Dive!") {
         }
     }
 
-    private fun String.toInstruction(): Instruction =
-        Instruction(this.splitWords().first(), this.splitWords().last().toInt())
-
     private fun calculateNewLocation(
-        lines: List<String>,
-        newLocation: (Position, String) -> Position
-    ): Int {
-        var position = Position()
-        lines.forEach { position = newLocation(position, it) }
-        return position.result()
-    }
+        lines: List<Instruction>,
+        newLocation: (Position, Instruction) -> Position
+    ): Int = lines.fold(Position(), newLocation).result()
 
     @Test
     fun exercise1() =
-        Assertions.assertEquals(1690020, computeResult {
-            calculateNewLocation(it) { position, line -> line.toInstruction().newPosition(position) }
-        })
+        Assertions.assertEquals(
+            1690020,
+            computeResult({ lines -> lines.map { it.toInstruction() } },
+                { calculateNewLocation(it) { position, line -> line.newPosition(position) } })
+        )
 
     @Test
     fun exercise2() =
-        Assertions.assertEquals(1408487760, computeResult {
-            calculateNewLocation(it) { position, line -> line.toInstruction().newPositionWithAim(position) }
-        })
+        Assertions.assertEquals(
+            1408487760,
+            computeResult({ lines -> lines.map { it.toInstruction() } },
+                { calculateNewLocation(it) { position, line -> line.newPositionWithAim(position) } })
+        )
 }
