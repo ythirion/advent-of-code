@@ -1,7 +1,7 @@
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-class Day1 : Day(1) {
+class Day1 : Day(1, "Sonar Sweep") {
     private fun `number of times a depth measurement increases`(
         lines: List<String>,
         size: Int

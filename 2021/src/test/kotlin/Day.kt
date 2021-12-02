@@ -6,7 +6,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 
-abstract class Day(day: Int) {
+abstract class Day(day: Int, name: String) {
     //region Boolean
     protected fun Boolean.toInt() = if (this) 1 else 0
     //endregion
@@ -26,7 +26,9 @@ abstract class Day(day: Int) {
     //endregion
 
     //region String
-    protected fun String.containsAll(vararg strings: String) = strings.map { this.contains(it) }.count { it } == strings.size
+    protected fun String.containsAll(vararg strings: String) =
+        strings.map { this.contains(it) }.count { it } == strings.size
+
     protected fun String.count(c: Char): Int = this.count { it == c }
     protected fun String.count(s: String): Int = this.split(s).count()
     private fun String.at(pos: Int) = this[pos % this.length]
@@ -64,6 +66,7 @@ abstract class Day(day: Int) {
         mutableList[index] = item
         return mutableList.toVavrList()
     }
+
     fun List<String>.toInts(): List<Int> = this.map { it.toInt() }
 
     //endregion
@@ -91,7 +94,9 @@ abstract class Day(day: Int) {
     //endregion
 
     //region Operators override
-    operator fun Pair<Int, Int>.plus(pair: Pair<Int, Int>): Pair<Int, Int> = Pair(first + pair.first, second + pair.second)
+    operator fun Pair<Int, Int>.plus(pair: Pair<Int, Int>): Pair<Int, Int> =
+        Pair(first + pair.first, second + pair.second)
+
     operator fun Char.plus(c: Char): String = this.toString() + c
     operator fun <T> MutableSet<T>.plus(elements: Iterable<T>): MutableSet<T> {
         this.addAll(elements)
@@ -105,9 +110,13 @@ abstract class Day(day: Int) {
     protected fun <R> computeResult(answer: (input: List<String>) -> R): R = answer(getInput())
     protected fun <R> computeLongResult(answer: (input: List<Long>) -> R): R = answer(getInput().map { it.toLong() })
     protected fun <R> computeIntResult(answer: (input: List<Int>) -> R): R = answer(getInput().map { it.toInt() })
-    protected fun <R> computeIntSeparatedResult(answer: (input: List<Int>) -> R): R = answer(getInputAsString().split(',').map { it.toInt() })
+    protected fun <R> computeIntSeparatedResult(answer: (input: List<Int>) -> R): R =
+        answer(getInputAsString().split(',').map { it.toInt() })
+
     protected fun <R> computeStringResult(answer: (input: String) -> R): R = answer(getInputAsString())
-    protected fun <R> computeStringSeparatedLinesResult(answer: (input: List<String>) -> R): R = answer(getInputAsSeparatedLines())
+    protected fun <R> computeStringSeparatedLinesResult(answer: (input: List<String>) -> R): R =
+        answer(getInputAsSeparatedLines())
+
     protected fun lineSeparator() = "\n"
 
     private fun getInput() = Files.readAllLines(Path.of(Objects.requireNonNull(input).toURI()))
