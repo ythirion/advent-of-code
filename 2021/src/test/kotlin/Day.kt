@@ -35,6 +35,7 @@ abstract class Day(day: Int, name: String) {
     protected fun String.at(pos: Int, c: Char) = this.at(pos) == c
     protected fun String.toIntList() = this.map { it.toString().toInt() }
     protected fun String.countChars() = this.groupBy { it }.mapValues { c -> this.count(c.key) }
+    protected fun CharSequence.binaryToInt() = parseInt(this.toString(), 2)
     protected fun String.binaryToInt() = parseInt(this, 2)
     protected fun String.binaryToLong() = parseLong(this, 2)
     protected fun String.replaceChars(mapping: Map<Char, Char>): String = this.map { c -> mapping[c] }.joinToString("")
@@ -67,7 +68,8 @@ abstract class Day(day: Int, name: String) {
         return mutableList.toVavrList()
     }
 
-    fun List<String>.toInts(): List<Int> = this.map { it.toInt() }
+    protected fun List<String>.toInts(): List<Int> = this.map { it.toInt() }
+    protected fun List<String>.column(y: Int): List<Char> = this.map { it.at(y) }
 
     //endregion
 
