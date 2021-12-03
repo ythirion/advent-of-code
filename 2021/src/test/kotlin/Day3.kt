@@ -8,15 +8,16 @@ class Day3 : Day(3, "Binary Diagnostic") {
 
     private fun List<String>.calculateRate(mode: Mode): Int {
         return (0 until this.first().length).map { column ->
-            val grouped = this.column(column)
+            this.column(column)
                 .groupingBy { it }
                 .eachCount()
                 .entries
-
-            when (mode) {
-                Mode.MostCommon -> grouped.maxByOrNull { it.value }!!
-                Mode.LessCommon -> grouped.minByOrNull { it.value }!!
-            }.key
+                .let { entry ->
+                    when (mode) {
+                        Mode.MostCommon -> entry.maxByOrNull { it.value }!!
+                        Mode.LessCommon -> entry.minByOrNull { it.value }!!
+                    }.key
+                }
         }.joinToString("").binaryToInt()
     }
 
