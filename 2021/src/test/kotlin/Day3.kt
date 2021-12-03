@@ -6,11 +6,15 @@ class Day3 : Day(3, "Binary Diagnostic") {
         MostCommon, LeastCommon
     }
 
-    private fun List<String>.calculateRate(mode: Mode): Int {
+    private fun List<String>.groupBitsAt(index: Int): Map<Char, Int> {
+        return this.column(index)
+            .groupingBy { it }
+            .eachCount()
+    }
+
+    private fun List<String>.calculateConsumptionRate(mode: Mode): Int {
         return (0 until this[0].length).map { index ->
-            this.column(index)
-                .groupingBy { it }
-                .eachCount()
+            groupBitsAt(index)
                 .let { entry ->
                     when (mode) {
                         Mode.MostCommon -> entry.maxByOrNull { it.value }!!
@@ -20,17 +24,17 @@ class Day3 : Day(3, "Binary Diagnostic") {
         }.joinToString("").binaryToInt()
     }
 
-    private fun gammaRate(lines: List<String>): Int = lines.calculateRate(Mode.MostCommon)
+    private fun gammaRate(lines: List<String>): Int = lines.calculateConsumptionRate(Mode.MostCommon)
+    private fun epsilonRate(lines: List<String>): Int = lines.calculateConsumptionRate(Mode.LeastCommon)
+    private fun powerConsumption(lines: List<String>) = gammaRate(lines) * epsilonRate(lines)
 
-    private fun epsilonRate(lines: List<String>): Int = lines.calculateRate(Mode.LeastCommon)
-
-    private fun List<String>.filter(mode: Mode): Int {
+    private fun List<String>.filterLifeRate(mode: Mode): Int {
         var remainingNumbers = this
         var number = ""
 
         (0 until this[0].length).map { index ->
             if (remainingNumbers.size > 1) {
-                remainingNumbers = filterRating(remainingNumbers, mode, index)
+                remainingNumbers = filterLifeRate(remainingNumbers, mode, index)
 
                 if (remainingNumbers.isNotEmpty()) {
                     number = remainingNumbers.first()
@@ -40,45 +44,40 @@ class Day3 : Day(3, "Binary Diagnostic") {
         return number.binaryToInt()
     }
 
-    private fun oxygenGeneratorRating(lines: List<String>): Int = lines.filter(Mode.MostCommon)
-    private fun co2ScrubberRating(lines: List<String>): Int = lines.filter(Mode.LeastCommon)
-
-    private fun filterRating(
+    private fun filterLifeRate(
         remainingNumbers: List<String>,
         mode: Mode,
         index: Int
     ): List<String> {
-        remainingNumbers.column(index)
-            .groupingBy { it }
-            .eachCount()
+        remainingNumbers.groupBitsAt(index)
             .let { entry ->
-                return remainingNumbers.filter {
-                    val expectedBitAtIndex = when (mode) {
-                        Mode.MostCommon -> {
-                            if (entry['1']!! >= entry['0']!!) '1'
-                            else '0'
+                return remainingNumbers.filter { binaryNumber ->
+                    binaryNumber.at(
+                        index, when (mode) {
+                            Mode.MostCommon -> if (entry['1']!! >= entry['0']!!) '1' else '0'
+                            Mode.LeastCommon -> if (entry['0']!! <= entry['1']!!) '0' else '1'
                         }
-                        Mode.LeastCommon -> {
-                            if (entry['0']!! <= entry['1']!!) '0'
-                            else '1'
-                        }
-                    }
-                    it.at(index, expectedBitAtIndex)
+                    )
                 }
             }
     }
+
+    private fun oxygenGeneratorRate(lines: List<String>): Int = lines.filterLifeRate(Mode.MostCommon)
+    private fun co2ScrubberRate(lines: List<String>): Int = lines.filterLifeRate(Mode.LeastCommon)
+    private fun lifeSupportRate(lines: List<String>): Int = oxygenGeneratorRate(lines) * co2ScrubberRate(lines)
 
     @Test
     fun exercise1() =
         Assertions.assertEquals(
             2035764,
-            computeResult { gammaRate(it) * epsilonRate(it) }
+            computeResult { powerConsumption(it) }
         )
+
 
     @Test
     fun exercise2() =
         Assertions.assertEquals(
             2817661,
-            computeResult { oxygenGeneratorRating(it) * co2ScrubberRating(it) }
+            computeResult { lifeSupportRate(it) }
         )
 }
