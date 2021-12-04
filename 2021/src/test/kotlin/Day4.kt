@@ -57,8 +57,11 @@ class Day4 : Day(4, "Giant Squid") {
             val winnersAtThisRound = boards.filter { it.isWinner(currentSuite) }.map { Winner(currentSuite, it) }
 
             winners.addAll(winnersAtThisRound.filterNot { winner -> winners.containsBoard(winner.board) })
+
+            if (winners.size == boards.size)
+                return winners
         }
-        return winners
+        throw Exception("guards not reached ?")
     }
 
     private fun `which board will win first`(lines: List<String>): Int =
