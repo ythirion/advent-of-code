@@ -18,8 +18,8 @@ class Day4 : Day(4, "Giant Squid") {
             var (row, column) = Pair(true, true)
 
             for (j in 0..4) {
-                row = row && suite.contains(this.grid[i][j])
-                column = column && suite.contains(this.grid[j][i])
+                row = row && suite.contains(grid[i][j])
+                column = column && suite.contains(grid[j][i])
             }
             if (row || column) return true
         }
@@ -54,9 +54,12 @@ class Day4 : Day(4, "Giant Squid") {
 
         1.until(suite.size).forEach { round ->
             val currentSuite = suite.subList(0, round)
-            val winnersAtThisRound = boards.filter { it.isWinner(currentSuite) }.map { Winner(currentSuite, it) }
+            val newWinnersAtThisRound =
+                boards.filterNot { winners.containsBoard(it) }
+                    .filter { it.isWinner(currentSuite) }
+                    .map { Winner(currentSuite, it) }
 
-            winners.addAll(winnersAtThisRound.filterNot { winner -> winners.containsBoard(winner.board) })
+            winners.addAll(newWinnersAtThisRound)
 
             if (winners.size == boards.size)
                 return winners
