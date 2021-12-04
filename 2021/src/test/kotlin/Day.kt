@@ -7,6 +7,10 @@ import java.nio.file.Path
 import java.util.*
 
 abstract class Day(day: Int, name: String) {
+    init {
+        println("Day $day : $name")
+    }
+
     //region Boolean
     protected fun Boolean.toInt() = if (this) 1 else 0
     //endregion
@@ -41,7 +45,7 @@ abstract class Day(day: Int, name: String) {
     protected fun String.replaceChars(mapping: Map<Char, Char>): String = this.map { c -> mapping[c] }.joinToString("")
     protected fun String.toStringList(): List<String> = map { it.toString() }
     protected fun String.splitAtEmptyLine() = this.split(lineSeparator() + lineSeparator())
-    protected fun String.splitWords() = this.split(" ")
+    protected fun String.splitWords() = this.split(" ").map { word -> word.removeWhitespaces() }
     protected fun String.splitLines() = this.split(lineSeparator())
     protected fun String.allIndicesOf(c: Char): List<Int> = this.indices.filter { this[it] == c }
     protected fun String.replaceAt(pos: Int, c: Char): String {
@@ -50,6 +54,7 @@ abstract class Day(day: Int, name: String) {
         return mutableList.joinToString(separator = "")
     }
 
+    protected fun String.removeWhitespaces() = replace(" ", "")
 
     protected fun String.sanitize(vararg strings: String): String {
         var sanitized = this

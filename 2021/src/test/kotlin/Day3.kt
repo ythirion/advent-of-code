@@ -15,10 +15,10 @@ class Day3 : Day(3, "Binary Diagnostic") {
     private fun List<String>.calculateConsumptionRate(mode: Mode): Int {
         return (0 until this[0].length).map { index ->
             groupBitsAt(index)
-                .let { entry ->
+                .let { group ->
                     when (mode) {
-                        Mode.MostCommon -> entry.maxByOrNull { it.value }!!
-                        Mode.LeastCommon -> entry.minByOrNull { it.value }!!
+                        Mode.MostCommon -> group.maxByOrNull { it.value }!!
+                        Mode.LeastCommon -> group.minByOrNull { it.value }!!
                     }.key
                 }
         }.joinToString("").binaryToInt()
@@ -50,12 +50,12 @@ class Day3 : Day(3, "Binary Diagnostic") {
         index: Int
     ): List<String> {
         remainingNumbers.groupBitsAt(index)
-            .let { entry ->
+            .let { group ->
                 return remainingNumbers.filter { binaryNumber ->
                     binaryNumber.at(
                         index, when (mode) {
-                            Mode.MostCommon -> if (entry['1']!! >= entry['0']!!) '1' else '0'
-                            Mode.LeastCommon -> if (entry['0']!! <= entry['1']!!) '0' else '1'
+                            Mode.MostCommon -> if (group['1']!! >= group['0']!!) '1' else '0'
+                            Mode.LeastCommon -> if (group['0']!! <= group['1']!!) '0' else '1'
                         }
                     )
                 }
