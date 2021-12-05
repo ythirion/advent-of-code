@@ -28,17 +28,16 @@ class Day5 : Day(5, "Hydrothermal Venture") {
 
         return lineOfVents
             .filter { filter(it) }
-            .sumOf { line -> countIntersections(line, diagram, countDiagonals) }
+            .sumOf { it.countIntersections(diagram, countDiagonals) }
     }
 
-    private fun countIntersections(
-        line: LineOfVents,
+    private fun LineOfVents.countIntersections(
         diagram: Array<Array<Int>>,
-        countDiagonals: Boolean
+        useDiagonals: Boolean
     ): Int {
         var intersections = 0
 
-        val (p1, p2) = line
+        val (p1, p2) = this
         val (x1, y1) = p1
         val (x2, y2) = p2
 
@@ -53,9 +52,8 @@ class Day5 : Day(5, "Hydrothermal Venture") {
                     if (++diagram[y1][x] == 2) intersections++
                 }
             }
-            // Diagonal
             else -> {
-                if (countDiagonals) {
+                if (useDiagonals) {
                     val d = abs(x1 - x2)
                     val dx = (x2 - x1) / d
                     val dy = (y2 - y1) / d
