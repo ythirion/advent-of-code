@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -16,14 +17,16 @@ class Day5 : Day(5, "Hydrothermal Venture") {
             .destructured
             .let { (x1, y1, x2, y2) -> LineOfVents(Point(x1.toInt(), y1.toInt()), Point(x2.toInt(), y2.toInt())) }
 
-    private fun solve(
-        lineOfVents: List<LineOfVents>
+    private fun countIntersections(
+        lineOfVents: List<LineOfVents>,
+        countDiagonals: Boolean = false,
+        filter: (LineOfVents) -> Boolean
     ): Int {
         val diagram = Array(lineOfVents.maxY() + 1) { Array(lineOfVents.maxX() + 1) { 0 } }
         var intersections = 0
 
         lineOfVents
-            .filter { line -> line.from.x == line.to.x || line.from.y == line.to.y }
+            .filter { filter(it) }
             .forEach { line ->
                 val (p1, p2) = line
                 val (x1, y1) = p1
@@ -44,6 +47,20 @@ class Day5 : Day(5, "Hydrothermal Venture") {
                             }
                         }
                     }
+                    // Diagonal
+                    else -> {
+                        if (countDiagonals) {
+                            val d = abs(x1 - x2)
+                            val dx = (x2 - x1) / d
+                            val dy = (y2 - y1) / d
+
+                            for (i in 0..d) {
+                                if (++diagram[y1 + dy * i][x1 + dx * i] == 2) {
+                                    intersections++
+                                }
+                            }
+                        }
+                    }
                 }
             }
         return intersections
@@ -52,15 +69,16 @@ class Day5 : Day(5, "Hydrothermal Venture") {
     @Test
     fun exercise1() =
         Assertions.assertEquals(
-            51034,
-            computeResult({ lines -> lines.map { it.toLineOfVents() } },
-                { solve(it) })
+            6397,
+            computeResult({ it.map { line -> line.toLineOfVents() } },
+                { countIntersections(it) { line -> line.from.x == line.to.x || line.from.y == line.to.y } })
         )
 
     @Test
     fun exercise2() =
         Assertions.assertEquals(
             5434,
-            computeResult { }
+            computeResult({ it.map { line -> line.toLineOfVents() } },
+                { countIntersections(it, countDiagonals = true) { true } })
         )
 }
