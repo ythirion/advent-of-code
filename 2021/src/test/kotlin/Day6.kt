@@ -1,34 +1,52 @@
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-typealias LanternFish = Int
+typealias Age = Int
+typealias Count = Long
 
 class Day6 : Day(6, "Lanternfish") {
-    private fun simulateDay(lanternFiches: MutableList<LanternFish>) {
-        var birth = 0
-        lanternFiches.replaceAll { lanternFish ->
-            when (lanternFish) {
-                0 -> {
-                    birth++
-                    6
-                }
-                else -> lanternFish - 1
-            }
-        }
-        lanternFiches += Array(birth) { _ -> 8 }
+    private val birthAge = 8
+    private val resetAge = 6
+
+    private fun Map<Age, Count>.safeGet(index: Int): Long = this[index] ?: 0L
+
+    private fun Map<Age, Count>.dayPassed(): MutableMap<Age, Count> {
+        val birth = this.safeGet(0)
+        val newState = mutableMapOf<Age, Count>()
+
+        (0 until birthAge).forEach { newState[it] = this.safeGet(it + 1) }
+
+        newState[resetAge] = this.safeGet(6 + 1) + birth
+        newState[birthAge] = birth
+
+        return newState
+    }
+
+    private fun Map<Age, Count>.grow(daysRemaining: Int): Map<Age, Count> {
+        val newState = this.dayPassed()
+
+        return if (daysRemaining != 1) newState.grow(daysRemaining - 1)
+        else newState
     }
 
     private fun `How many lanternfish would there be after x days`(
-        lanternFiches: MutableList<LanternFish>,
+        lanternFiches: List<Int>,
         days: Int
-    ): Int {
-        return (days downTo 1)
-            .forEach { _ -> simulateDay(lanternFiches) }
-            .let { lanternFiches.size }
+    ): Long {
+        return lanternFiches.groupingBy { it }
+            .eachCount()
+            .mapValues { it.value.toLong() }
+            .grow(days).values
+            .sum()
     }
 
     @Test
     fun exercise1() =
         Assertions.assertEquals(362740,
             computeIntSeparatedResult { `How many lanternfish would there be after x days`(it.toMutableList(), 80) })
+
+    @Test
+    fun exercise2() =
+        Assertions.assertEquals(1644874076764,
+            computeIntSeparatedResult { `How many lanternfish would there be after x days`(it.toMutableList(), 256) })
 }
