@@ -16,17 +16,18 @@ class Day6 : Day(6, "Lanternfish") {
 
         (0 until birthAge).forEach { newState[it] = this.safeGet(it + 1) }
 
-        newState[resetAge] = this.safeGet(6 + 1) + birth
+        newState[resetAge] = this.safeGet(resetAge + 1) + birth
         newState[birthAge] = birth
 
         return newState
     }
 
     private fun Map<Age, Count>.grow(daysRemaining: Int): Map<Age, Count> {
-        val newState = this.dayPassed()
-
-        return if (daysRemaining != 1) newState.grow(daysRemaining - 1)
-        else newState
+        return this.dayPassed()
+            .let { newState ->
+                if (daysRemaining != 1) newState.grow(daysRemaining - 1)
+                else newState
+            }
     }
 
     private fun `How many lanternfish would there be after x days`(
