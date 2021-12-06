@@ -22,10 +22,9 @@ class Day6 : Day(6, "Lanternfish") {
         lanternFiches: MutableList<LanternFish>,
         days: Int
     ): Int {
-        for (day in days downTo 1) {
-            simulateDay(lanternFiches)
-        }
-        return lanternFiches.size
+        return (days downTo 1)
+            .forEach { _ -> simulateDay(lanternFiches) }
+            .let { lanternFiches.size }
     }
 
     @Test
