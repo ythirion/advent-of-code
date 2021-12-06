@@ -4,9 +4,9 @@ import org.junit.jupiter.api.Test
 typealias LanternFish = Int
 
 class Day6 : Day(6, "Lanternfish") {
-    private fun simulateDay(lanternFiches: List<LanternFish>): List<LanternFish> {
+    private fun simulateDay(lanternFiches: MutableList<LanternFish>) {
         var birth = 0
-        val newStates = lanternFiches.map { lanternFish ->
+        lanternFiches.replaceAll { lanternFish ->
             when (lanternFish) {
                 0 -> {
                     birth++
@@ -15,24 +15,21 @@ class Day6 : Day(6, "Lanternfish") {
                 else -> lanternFish - 1
             }
         }
-        return newStates.toMutableList()
-            .add(Array(birth) { _ -> 8 }.toList())
+        lanternFiches += Array(birth) { _ -> 8 }
     }
 
     private fun `How many lanternfish would there be after x days`(
-        lanternFiches: List<LanternFish>,
+        lanternFiches: MutableList<LanternFish>,
         days: Int
     ): Int {
-        var state = lanternFiches
         for (day in days downTo 1) {
-            state = simulateDay(state)
+            simulateDay(lanternFiches)
         }
-        return state.size
+        return lanternFiches.size
     }
-
 
     @Test
     fun exercise1() =
         Assertions.assertEquals(362740,
-            computeIntSeparatedResult { `How many lanternfish would there be after x days`(it, 80) })
+            computeIntSeparatedResult { `How many lanternfish would there be after x days`(it.toMutableList(), 80) })
 }
