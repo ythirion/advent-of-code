@@ -10,7 +10,7 @@ class Day6 : Day(6, "Lanternfish") {
 
     private fun Map<Age, Count>.safeGet(index: Int): Long = this[index] ?: 0L
 
-    private fun Map<Age, Count>.dayPassed(): MutableMap<Age, Count> {
+    private fun Map<Age, Count>.dayPassed(): Map<Age, Count> {
         val birth = this.safeGet(0)
         val newState = mutableMapOf<Age, Count>()
 
@@ -31,7 +31,7 @@ class Day6 : Day(6, "Lanternfish") {
     }
 
     private fun `How many lanternfish would there be after x days`(
-        lanternFiches: List<Int>,
+        lanternFiches: List<Age>,
         days: Int
     ): Long {
         return lanternFiches.groupingBy { it }
@@ -44,10 +44,10 @@ class Day6 : Day(6, "Lanternfish") {
     @Test
     fun exercise1() =
         Assertions.assertEquals(362740,
-            computeIntSeparatedResult { `How many lanternfish would there be after x days`(it.toMutableList(), 80) })
+            computeIntSeparatedResult { `How many lanternfish would there be after x days`(it, 80) })
 
     @Test
     fun exercise2() =
         Assertions.assertEquals(1644874076764,
-            computeIntSeparatedResult { `How many lanternfish would there be after x days`(it.toMutableList(), 256) })
+            computeIntSeparatedResult { `How many lanternfish would there be after x days`(it, 256) })
 }
