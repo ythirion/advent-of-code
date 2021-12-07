@@ -10,7 +10,7 @@ class Day7 : Day(7, "The Treachery of Whales") {
 
     private fun `How much fuel must they spend to align to the cheapest position ?`(
         crabsPositions: List<Position>,
-        fuelCalculator: (Int) -> Int
+        fuelCalculator: (difference: Int) -> Int
     ): Int = potentialPositionsFrom(crabsPositions)
         .minOf { position -> crabsPositions.sumOf { fuelCalculator(abs(it - position)) } }
 
@@ -28,10 +28,8 @@ class Day7 : Day(7, "The Treachery of Whales") {
         Assertions.assertEquals(
             92881128,
             computeIntSeparatedResult { input ->
-                `How much fuel must they spend to align to the cheapest position ?`(
-                    input
-                ) { difference ->
-                    (0 until difference).fold(difference) { acc, i -> acc + i }
+                `How much fuel must they spend to align to the cheapest position ?`(input) { difference ->
+                    difference * (difference + 1) / 2
                 }
             })
 }
