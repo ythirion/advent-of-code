@@ -5,14 +5,15 @@ import kotlin.math.abs
 typealias Position = Int
 
 class Day7 : Day(7, "The Treachery of Whales") {
-    private fun potentialPositionsFrom(horizontalPositions: List<Position>): Sequence<Int> =
-        (horizontalPositions.minOf { it }..horizontalPositions.maxOf { it }).toList().asSequence()
+    private fun List<Position>.potentialPositions() = minOf { it }..maxOf { it }
+    private fun Position.distance(position: Int) = abs(this - position)
 
     private fun `How much fuel must they spend to align to the cheapest position ?`(
         crabsPositions: List<Position>,
-        fuelCalculator: (difference: Int) -> Int
-    ): Int = potentialPositionsFrom(crabsPositions)
-        .minOf { position -> crabsPositions.sumOf { fuelCalculator(abs(it - position)) } }
+        fuelCalculator: (distance: Int) -> Int
+    ): Int = crabsPositions.potentialPositions()
+        .minOf { position -> crabsPositions.sumOf { fuelCalculator(it.distance(position)) } }
+
 
     @Test
     fun exercise1() =
@@ -28,8 +29,8 @@ class Day7 : Day(7, "The Treachery of Whales") {
         Assertions.assertEquals(
             92881128,
             computeIntSeparatedResult { input ->
-                `How much fuel must they spend to align to the cheapest position ?`(input) { difference ->
-                    difference * (difference + 1) / 2
+                `How much fuel must they spend to align to the cheapest position ?`(input) { distance ->
+                    distance * (distance + 1) / 2
                 }
             })
 }
