@@ -8,10 +8,13 @@ class Day7 : Day(7, "The Treachery of Whales") {
         horizontalPositions: List<Int>
     ): Int = horizontalPositions.sumOf { abs(it - position) }
 
-    private fun `How much fuel must they spend to align to the cheapest position ?`(horizontalPositions: List<Int>): Int {
+    private fun `How much fuel must they spend to align to the cheapest position ?`(
+        horizontalPositions: List<Int>,
+        fuelCalculator: (Int, List<Int>) -> Int
+    ): Int {
         return horizontalPositions.asSequence().distinct()
             .sorted()
-            .map { fuelCostAt(it, horizontalPositions) }
+            .map { fuelCalculator(it, horizontalPositions) }
             .sorted()
             .first()
     }
@@ -19,7 +22,11 @@ class Day7 : Day(7, "The Treachery of Whales") {
     @Test
     fun exercise1() =
         Assertions.assertEquals(
-            6397,
-            computeIntSeparatedResult { `How much fuel must they spend to align to the cheapest position ?`(it) }
-        )
+            331067,
+            computeIntSeparatedResult {
+                `How much fuel must they spend to align to the cheapest position ?`(
+                    it
+                ) { position, horizontalPositions -> fuelCostAt(position, horizontalPositions) }
+            })
+
 }
