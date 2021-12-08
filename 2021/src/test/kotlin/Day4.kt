@@ -89,14 +89,14 @@ class Day4 : Day(4, "Giant Squid") {
     //endregion
 
     @Test
-    fun exercise1() =
+    fun part1() =
         Assertions.assertEquals(
             51034,
             computeResult { `which board will win first`(it) }
         )
 
     @Test
-    fun exercise2() =
+    fun part2() =
         Assertions.assertEquals(
             5434,
             computeResult { `which board will win last`(it) }

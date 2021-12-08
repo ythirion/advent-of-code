@@ -42,12 +42,12 @@ class Day6 : Day(6, "Lanternfish") {
     }
 
     @Test
-    fun exercise1() =
+    fun part1() =
         Assertions.assertEquals(362740,
             computeIntSeparatedResult { `How many lanternfish would there be after x days`(it, 80) })
 
     @Test
-    fun exercise2() =
+    fun part2() =
         Assertions.assertEquals(1644874076764,
             computeIntSeparatedResult { `How many lanternfish would there be after x days`(it, 256) })
 }

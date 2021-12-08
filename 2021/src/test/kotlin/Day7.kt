@@ -16,7 +16,7 @@ class Day7 : Day(7, "The Treachery of Whales") {
 
 
     @Test
-    fun exercise1() =
+    fun part1() =
         Assertions.assertEquals(
             331067,
             computeIntSeparatedResult { input ->
@@ -25,7 +25,7 @@ class Day7 : Day(7, "The Treachery of Whales") {
 
 
     @Test
-    fun exercise2() =
+    fun part2() =
         Assertions.assertEquals(
             92881128,
             computeIntSeparatedResult { input ->

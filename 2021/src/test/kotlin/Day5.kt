@@ -68,7 +68,7 @@ class Day5 : Day(5, "Hydrothermal Venture") {
     }
 
     @Test
-    fun exercise1() =
+    fun part1() =
         Assertions.assertEquals(
             6397,
             computeResult({ it.map { line -> line.toLineOfVents() } },
@@ -76,7 +76,7 @@ class Day5 : Day(5, "Hydrothermal Venture") {
         )
 
     @Test
-    fun exercise2() =
+    fun part2() =
         Assertions.assertEquals(
             22335,
             computeResult({ it.map { line -> line.toLineOfVents() } },

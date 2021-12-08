@@ -67,7 +67,7 @@ class Day3 : Day(3, "Binary Diagnostic") {
     private fun lifeSupportRate(lines: List<String>): Int = oxygenGeneratorRate(lines) * co2ScrubberRate(lines)
 
     @Test
-    fun exercise1() =
+    fun part1() =
         Assertions.assertEquals(
             2035764,
             computeResult { powerConsumption(it) }
@@ -75,7 +75,7 @@ class Day3 : Day(3, "Binary Diagnostic") {
 
 
     @Test
-    fun exercise2() =
+    fun part2() =
         Assertions.assertEquals(
             2817661,
             computeResult { lifeSupportRate(it) }

@@ -35,7 +35,7 @@ class Day2 : Day(2, "Dive!") {
     ): Int = lines.fold(Position(), newLocation).result()
 
     @Test
-    fun exercise1() =
+    fun part1() =
         Assertions.assertEquals(
             1690020,
             computeResult({ lines -> lines.map { it.toInstruction() } },
@@ -43,7 +43,7 @@ class Day2 : Day(2, "Dive!") {
         )
 
     @Test
-    fun exercise2() =
+    fun part2() =
         Assertions.assertEquals(
             1408487760,
             computeResult({ lines -> lines.map { it.toInstruction() } },
