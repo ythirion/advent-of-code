@@ -81,6 +81,7 @@ abstract class Day(day: Int, name: String) {
 
     //region Kotlin collections
     fun List<Long>.multiply(): Long = this.reduce { a, b -> a * b }
+    fun Sequence<Int>.multiply(): Int = this.reduce { a, b -> a * b }
 
     fun <T> List<T>.replaceAt(index: Int, item: T): List<T> {
         val mutableList = this.toMutableList()
