@@ -46,6 +46,7 @@ abstract class Day(day: Int, name: String) {
     protected fun String.toStringList(): List<String> = map { it.toString() }
     protected fun String.splitAtEmptyLine() = this.split(lineSeparator() + lineSeparator())
     protected fun String.splitWords() = this.split(" ").map { word -> word.removeWhitespaces() }
+    protected fun String.splitInts() = this.map { Character.getNumericValue(it) }
     protected fun String.splitLines() = this.split(lineSeparator())
     protected fun String.allIndicesOf(c: Char): List<Int> = this.indices.filter { this[it] == c }
     protected fun String.replaceAt(pos: Int, c: Char): String {
