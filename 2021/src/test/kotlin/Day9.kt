@@ -1,40 +1,41 @@
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-typealias HeightMap = List<List<Int>>
+typealias HeightMap = List<Day9.Point>
 
 class Day9 : Day(9, "Smoke Basin") {
-    data class Point(val x: Int, val y: Int, val value: Int)
+    data class Point(val x: Int, val y: Int, val height: Int)
 
-    private fun `What is the sum of the risk levels of all low points on your heightmap`(input: List<String>): Int {
-        val heightMap = input.map { it.splitInts() }
-        val adjacent = mutableMapOf<Point, List<Int>>()
+    private fun List<String>.toPoints(): List<Point> {
+        val points = mutableListOf<Point>()
 
-        for (x in heightMap.indices) {
-            for (y in 0 until heightMap[0].size) {
-                adjacent[Point(x, y, heightMap[x][y])] = heightMap.adjacent(x, y).mapNotNull { it }
+        this.forEachIndexed { x, line ->
+            line.forEachIndexed { y, value ->
+                points += Point(x, y, value.toIntDigit())
             }
         }
-
-        return adjacent
-            .filter { entry -> entry.value.all { entry.key.value < it } }
-            .keys
-            .sumOf { it.value + 1 }
+        return points
     }
 
-    private fun HeightMap.adjacent(
-        x: Int,
-        y: Int
-    ): List<Int?> {
-        return listOf(
-            this.safeGet(x + 1, y),
-            this.safeGet(x - 1, y),
-            this.safeGet(x, y + 1),
-            this.safeGet(x, y - 1)
+    private
+    fun `What is the sum of the risk levels of all low points on your heightmap`(input: List<String>): Int {
+        input.toPoints().let { heightMap ->
+            return heightMap.filter { point ->
+                point.adjacent(heightMap).all { point.height < it.height }
+            }.sumOf { it.height + 1 }
+        }
+    }
+
+    private fun Point.adjacent(heightMap: HeightMap): List<Point> {
+        return listOfNotNull(
+            heightMap.safeGet(x + 1, y),
+            heightMap.safeGet(x - 1, y),
+            heightMap.safeGet(x, y + 1),
+            heightMap.safeGet(x, y - 1)
         )
     }
 
-    private fun HeightMap.safeGet(x: Int, y: Int): Int? = this.getOrNull(x)?.getOrNull(y)
+    private fun HeightMap.safeGet(x: Int, y: Int): Point? = this.find { it.x == x && it.y == y }
 
     @Test
     fun part1() =

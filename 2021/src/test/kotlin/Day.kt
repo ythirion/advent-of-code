@@ -106,6 +106,7 @@ abstract class Day(day: Int, name: String) {
         Pair(first + pair.first, second + pair.second)
 
     operator fun Char.plus(c: Char): String = this.toString() + c
+    protected fun Char.toIntDigit(): Int = Character.getNumericValue(this)
     operator fun <T> MutableSet<T>.plus(elements: Iterable<T>): MutableSet<T> {
         this.addAll(elements)
         return this
