@@ -5,6 +5,7 @@ import java.lang.Long.parseLong
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
+import java.util.function.Predicate
 
 abstract class Day(day: Int, name: String) {
     init {
@@ -123,6 +124,11 @@ abstract class Day(day: Int, name: String) {
         answer: (input: List<TInput>) -> R
     ): R = answer(transform(getInput()))
 
+    protected fun <TKey, TValue, R> computeMapResult(
+        transform: (input: List<String>) -> Map<TKey, TValue>,
+        answer: (input: Map<TKey, TValue>) -> R
+    ): R = answer(transform(getInput()))
+
     protected fun <R> computeLongResult(answer: (input: List<Long>) -> R): R = answer(getInput().map { it.toLong() })
     protected fun <R> computeIntResult(answer: (input: List<Int>) -> R): R = answer(getInput().map { it.toInt() })
     protected fun <R> computeIntSeparatedResult(answer: (input: List<Int>) -> R): R =
@@ -138,4 +144,20 @@ abstract class Day(day: Int, name: String) {
     private fun getInputAsString() = Files.readString(Path.of(Objects.requireNonNull(input).toURI()))
     private fun getInputAsSeparatedLines() = getInputAsString().split("\n\n")
     //endregion
+
+    protected fun <TInput, R> loopUntil(
+        input: TInput,
+        execute: (TInput) -> R,
+        breakCondition: Predicate<R>
+    ): Int {
+        var iterations = 0
+
+        while (true) {
+            iterations++
+
+            if (breakCondition.test(execute(input)))
+                break
+        }
+        return iterations
+    }
 }
