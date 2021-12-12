@@ -12,11 +12,9 @@ class Day12 : Day(12, "Passage Pathing") {
     private fun List<Cave>.notAlreadyPassedInSmallCave(cave: Cave) = !contains(cave)
     private fun List<Cave>.reachedEnd() = last() == end
     private fun List<Cave>.canVisitSmallCave(smallCave: Cave) = count { it == smallCave } < 2
+    private fun String.splitToPair(delimiter: String) = split(delimiter)[0] to split(delimiter)[1]
 
-    private fun List<String>.toPaths(): List<MiniPath> = this.map {
-        val (from, to) = it.split("-")
-        from to to
-    }
+    private fun List<String>.toPaths(): List<MiniPath> = this.map { it.splitToPair("-") }
 
     private fun List<MiniPath>.connectedCaves(): Map<Cave, List<Cave>> =
         mutableMapOf<Cave, MutableList<String>>().let { paths ->
@@ -33,9 +31,8 @@ class Day12 : Day(12, "Passage Pathing") {
             .distinct()
 
     private fun Map<Cave, List<Cave>>.findAllPaths(constraint: (visitedCaves: List<Cave>, currentCave: Cave) -> Boolean): Set<List<Cave>> =
-        mutableSetOf<List<String>>().let {
-            findAllPaths(listOf(start), it, constraint)
-            return it
+        mutableSetOf<List<String>>().apply {
+            findAllPaths(listOf(start), this, constraint)
         }
 
     private fun Map<Cave, List<Cave>>.findAllPaths(
@@ -50,15 +47,15 @@ class Day12 : Day(12, "Passage Pathing") {
 
         this.getValue(visitedCaves.last())
             .minus(start)
-            .filter { cave ->
-                cave.isBigCave() || visitedCaves.notAlreadyPassedInSmallCave(cave)
-                        || constraint(visitedCaves, cave)
+            .filter {
+                it.isBigCave()
+                        || visitedCaves.notAlreadyPassedInSmallCave(it)
+                        || constraint(visitedCaves, it)
             }
             .forEach { potentialNextCave ->
                 findAllPaths(visitedCaves + potentialNextCave, result, constraint)
             }
     }
-
 
     private fun `How many paths through this cave system are there that visit small caves at most once`(
         paths: List<MiniPath>
