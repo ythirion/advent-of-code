@@ -64,10 +64,8 @@ class Day11 : Day(11, "Dumbo Octopus") {
         return flashes
     }
 
-
     private fun `How many total flashes are there after 100 steps`(grid: OctopusGrid): Int =
         (0 until 100).fold(0) { flashes, _ -> flashes + grid.newStep() }
-
 
     private fun `What is the first step during which all octopuses flash`(grid: OctopusGrid): Int =
         loopUntil(grid,
