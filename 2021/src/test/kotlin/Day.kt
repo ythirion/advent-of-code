@@ -45,7 +45,7 @@ abstract class Day(day: Int, name: String) {
     protected fun String.binaryToLong() = parseLong(this, 2)
     protected fun String.replaceChars(mapping: Map<Char, Char>): String = this.map { c -> mapping[c] }.joinToString("")
     protected fun String.toStringList(): List<String> = map { it.toString() }
-    protected fun String.splitAtEmptyLine() = this.split(lineSeparator() + lineSeparator())
+    protected fun String.splitAtEmptyLine(): List<String> = this.split(lineSeparator() + lineSeparator())
     protected fun String.splitWords() = this.split(" ").map { word -> word.removeWhitespaces() }
     protected fun String.splitInts() = this.map { Character.getNumericValue(it) }
     protected fun String.splitLines() = this.split(lineSeparator())
