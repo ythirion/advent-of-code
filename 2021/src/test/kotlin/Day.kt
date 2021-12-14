@@ -64,6 +64,9 @@ abstract class Day(day: Int, name: String) {
         return sanitized
     }
 
+    protected fun String.mostCommonChar(): Pair<Char, Int> = this.countChars().maxByOrNull { e -> e.value }?.toPair()!!
+    protected fun String.leastCommonChar(): Pair<Char, Int> = this.countChars().minByOrNull { e -> e.value }?.toPair()!!
+
     //endregion
 
     //region vavr collections
