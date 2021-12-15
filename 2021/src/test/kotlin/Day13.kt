@@ -22,7 +22,7 @@ class Day13 : Day(13, "Transparent Origami") {
         return Point(x, y - (2 * dy))
     }
 
-    private fun String.toPoints(): List<Point> =
+    private fun String.toTransparentPaper(): TransparentPaper =
         this.splitAtEmptyLine()[0]
             .splitLines()
             .map {
@@ -72,7 +72,7 @@ class Day13 : Day(13, "Transparent Origami") {
         input: String
     ): Int =
         input.toFoldInstructions()[0].let {
-            return input.toPoints()
+            return input.toTransparentPaper()
                 .fold(it)
                 .count()
         }
@@ -80,7 +80,7 @@ class Day13 : Day(13, "Transparent Origami") {
     private fun `What code do you use to activate the infrared thermal imaging camera system`(
         input: String
     ) = input.toFoldInstructions()
-        .fold(input.toPoints()) { paper, instruction -> paper.fold(instruction) }
+        .fold(input.toTransparentPaper()) { paper, instruction -> paper.fold(instruction) }
         .print()
 
     @Test
