@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import kotlin.math.abs
 
 class Day17 : Day(17, "Trick Shot") {
     private val targetArea = TargetArea(192..251, -89..-59)
@@ -12,7 +13,7 @@ class Day17 : Day(17, "Trick Shot") {
     private fun TargetArea.isOut(p: Point): Boolean = p.x > this.x.last || p.y < this.y.first
     private fun TargetArea.allVelocity(): List<Velocity> =
         (0..this.x.last).flatMap { xVelocity ->
-            (this.y.first..-this.y.first).map { yVelocity -> Velocity(xVelocity, yVelocity) }
+            (this.y.first..abs(this.y.first)).map { yVelocity -> Velocity(xVelocity, yVelocity) }
         }
 
     private fun Point.step(velocity: Velocity): Point = copy(x = x + velocity.x, y = y + velocity.y)

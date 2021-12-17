@@ -173,10 +173,9 @@ abstract class Day(day: Int, name: String) {
 
         while (true) {
             state = updateInput(state)
-            val e = breakCondition(state)
-
-            if (e != null)
-                return e
+            breakCondition(state).let {
+                if (it != null) return it
+            }
         }
     }
 }
