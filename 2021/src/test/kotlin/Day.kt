@@ -163,4 +163,20 @@ abstract class Day(day: Int, name: String) {
         }
         return iterations
     }
+
+    protected fun <TInput, TResult> loopUntilGet(
+        input: TInput,
+        updateInput: (TInput) -> TInput,
+        breakCondition: (TInput) -> TResult?
+    ): TResult {
+        var state = input
+
+        while (true) {
+            state = updateInput(state)
+            val e = breakCondition(state)
+
+            if (e != null)
+                return e
+        }
+    }
 }
