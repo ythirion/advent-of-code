@@ -93,6 +93,9 @@ abstract class Day(day: Int, name: String) {
         return mutableList
     }
 
+    fun <T, R> List<T>.mapFrom(index: Int, transform: (T) -> R): List<R> =
+        this.subList(index, this.size).map(transform)
+
     protected fun <T> Stack<T>.popIf(t: T): T? = if (last() == t) pop() else null
     protected fun <T> Stack<T>.lastIs(t: T): Boolean = last() == t
     protected fun <T> MutableList<T>.add(elements: Collection<T>): List<T> {
