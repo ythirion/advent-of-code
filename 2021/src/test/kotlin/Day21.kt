@@ -1,54 +1,55 @@
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-typealias DeterministicDice = Int
-typealias DiracDice = Triple<Int, Int, Int>
-
 class Day21 : Day(21, "Dirac Dice") {
     private val deterministicDice = generateSequence(1) { if (it == 100) 1 else it + 1 }.iterator()
     private val diracDiceCombinations = listOf(1, 2, 3).let {
         it.flatMap { dice1 -> it.flatMap { dice2 -> it.map { dice3 -> Triple(dice1, dice2, dice3) } } }
     }
 
+    private val diracDice = listOf(1, 2, 3).let {
+        it.flatMap { dice1 -> it.flatMap { dice2 -> it.map { dice3 -> dice1 + dice2 + dice3 } } }
+    }
+
     data class Player(val pawn: Int, val score: Int = 0)
-    data class GameResult(val winner: Int, val players: Pair<Player, Player>, val totalRolls: Int)
+    data class GameResult(val winner: Player, val loser: Player, val totalRolls: Int)
 
-    private fun Player.movePawn(dice: List<Int>): Player =
-        ((pawn + dice.sum()) % 10).apply { if (this == 0) this + 10 }.let { copy(pawn = it, score = score + it) }
+    private fun Player.movePawn(dice: Int): Player =
+        this.copy(pawn = ((pawn + dice) % 10).apply {
+            if (this == 0) this + 10
+        })
 
+    private fun Player.score(): Player = copy(score = this.score + this.pawn)
     private fun Player.whoWins(other: Player): Player = if (this.score > other.score) this else other
+    private fun List<Player>.endGame(winningScore: Int): Boolean = this.any { it.score >= winningScore }
 
     private fun play(
-        player1Position: Int,
-        player2Position: Int,
+        player1: Player,
+        player2: Player,
         winningScore: Int,
         roll: () -> List<Int>
     ): GameResult {
-        var totalRolls = 0
-        var player1 = Player(player1Position)
-        var player2 = Player(player2Position)
-
-        fun play(player: Player): Player =
-            roll().let { die ->
-                player.movePawn(die).let {
-                    totalRolls += die.size
-                    return it
-                }
-            }
-
-        fun endGame() = player1.score >= winningScore || player2.score >= winningScore
-
-        fun result(): GameResult = player1.whoWins(player2).let { winner ->
-            return GameResult(if (winner == player1) 1 else 2, Pair(player1, player2), totalRolls)
-        }
+        var rolls = 0
+        val players = mutableListOf(player1, player2)
+        var playerIndex = 0
 
         while (true) {
-            player1 = play(player1)
-            if (endGame()) break
-            player2 = play(player2)
-            if (endGame()) break
+            var currentPlayer = players[playerIndex]
+            roll().map { dice ->
+                currentPlayer = currentPlayer.movePawn(dice)
+                rolls++
+            }
+            players[playerIndex] = currentPlayer.score()
+            playerIndex = (playerIndex + 1) % 2
+
+            if (players.endGame(winningScore))
+                break
         }
-        return result()
+
+        players[0].whoWins(players[1])
+            .let { winner ->
+                return GameResult(winner, if (winner == players[0]) players[1] else players[0], rolls)
+            }
     }
 
     private fun playWithDiracDice(
@@ -85,13 +86,9 @@ class Day21 : Day(21, "Dirac Dice") {
     }
 
     private fun `what do you get if you multiply the score of the losing player by the number of times the die was rolled during the game`(): Int =
-        play(5, 8, 1000) {
-            listOf(
-                deterministicDice.next(),
-                deterministicDice.next(),
-                deterministicDice.next()
-            )
-        }.let { (if (it.winner == 1) it.players.second.score else it.players.first.score) * it.totalRolls }
+        play(Player(5), Player(8), 1000) {
+            listOf(deterministicDice.next(), deterministicDice.next(), deterministicDice.next())
+        }.let { it.loser.score * it.totalRolls }
 
     private fun `find the player that wins in more universes in how many universes does that player win`() =
         playWithDiracDice(5, 8, hashMapOf()).let {
