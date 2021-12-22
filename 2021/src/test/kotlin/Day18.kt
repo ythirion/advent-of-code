@@ -23,13 +23,14 @@ class Day18 : Day(18, "Snailfish") {
         throw Exception("WTF ?")
     }
 
-    private fun SnailNumber.findDepth(a: List<SnailPair>, depth: Int): List<SnailPair>? = when (this) {
-        is Regular -> null
-        is SnailPair -> when (depth) {
-            0 -> a + this
-            else -> left.findDepth(a + this, depth - 1) ?: right.findDepth(a + this, depth - 1)
+    private fun SnailNumber.findDepth(a: List<SnailPair>, depth: Int): List<SnailPair>? =
+        when (this) {
+            is Regular -> null
+            is SnailPair -> when (depth) {
+                0 -> a + this
+                else -> left.findDepth(a + this, depth - 1) ?: right.findDepth(a + this, depth - 1)
+            }
         }
-    }
 
     private fun SnailNumber.findValue(pair: SnailPair, value: Int): Pair<SnailPair, Regular>? =
         when (this) {
@@ -65,6 +66,7 @@ class Day18 : Day(18, "Snailfish") {
             val s = a.last()
             val p = a[a.lastIndex - 1]
             if (s == p.left) p.left = Regular(0) else p.right = Regular(0)
+
             return true
         }
         findValue(this, 10)?.let { (p, s) ->
@@ -74,28 +76,25 @@ class Day18 : Day(18, "Snailfish") {
         return false
     }
 
-    private fun SnailPair.reduceDeep() = apply {
-        while (reduce()) {
-        }
+    private fun SnailPair.reduceDeep() = this.apply {
+        while (reduce()){}
     }
 
-    private fun SnailNumber.magnitude(): Long = when (this) {
+    private fun SnailNumber.magnitude(): Int = when (this) {
         is Regular -> value
-        is SnailPair -> 3L * left.magnitude() + 2L * right.magnitude()
+        is SnailPair -> 3 * left.magnitude() + 2 * right.magnitude()
     }
 
-    private fun `what is the magnitude of the final sum`(homework: List<SnailNumber>): Long =
+    private fun `what is the magnitude of the final sum`(homework: List<SnailNumber>): Int =
         homework.reduce { a, b -> SnailPair(a, b).reduceDeep() }
             .magnitude()
 
     private fun `what is the largest magnitude of any sum of two different snailfish numbers from the homework assignment`(
         homework: List<String>
-    ): Long {
-        fun <S, T> product(s: Iterable<S>, t: Iterable<T>) =
-            s.asSequence().flatMap { l -> t.map { r -> l to r } }
-
-        return product(homework, homework)
-            .mapNotNull { (a, b) -> if (a != b) a.toSnailFishNumber() to b.toSnailFishNumber() else null }
+    ): Int {
+        return homework.product(homework)
+            .filter { (a, b) -> a != b }
+            .map { (a, b) -> a.toSnailFishNumber() to b.toSnailFishNumber() }
             .maxOf { (a, b) -> SnailPair(a, b).reduceDeep().magnitude() }
     }
 

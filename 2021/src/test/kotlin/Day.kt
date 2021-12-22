@@ -80,6 +80,7 @@ abstract class Day(day: Int, name: String) {
 
     protected fun List<String>.toInts(): List<Int> = this.map { it.toInt() }
     protected fun List<String>.column(y: Int): List<Char> = this.map { it.at(y) }
+    protected fun <S, T> Iterable<S>.product(t: Iterable<T>) = asSequence().flatMap { l -> t.map { r -> l to r } }
 
     //endregion
 
