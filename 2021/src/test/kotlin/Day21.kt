@@ -7,7 +7,7 @@ class Day21 : Day(21, "Dirac Dice") {
 
     private val deterministicDice = generateSequence(1) { if (it == 100) 1 else it + 1 }.iterator()
     private val diracDiceCombinations = listOf(1, 2, 3).let {
-        it.flatMap { dice1 -> it.flatMap { dice2 -> it.map { dice3 -> Triple(dice1, dice2, dice3) } } }
+        it.flatMap { dice1 -> it.flatMap { dice2 -> it.map { dice3 -> dice1 + dice2 + dice3 } } }
     }
 
     private fun Player.movePawn(dice: Int): Player =
@@ -63,7 +63,7 @@ class Day21 : Day(21, "Dirac Dice") {
         var win2 = 0L
 
         diracDiceCombinations.forEach { dice ->
-            val newPlayer1 = player1.movePawn(dice.toList().sum()).score()
+            val newPlayer1 = player1.movePawn(dice).score()
             val inOtherUniverses = playWithDiracDice(player2, newPlayer1, cache)
 
             cache["$player2-$newPlayer1"] = inOtherUniverses
