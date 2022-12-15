@@ -11,3 +11,8 @@ build
 */target
 *.iml
 .DS*
+
+
+gradle/
+gradlew.bat
+gradlew
