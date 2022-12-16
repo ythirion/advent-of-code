@@ -11,13 +11,31 @@ class Day2 : Day(2, "Rock Paper Scissors") {
 
     private enum class Shape(val score: Int) { Rock(1), Paper(2), Scissors(3) }
 
-    private val player1Strategy = mapOf('A' to Rock, 'B' to Paper, 'C' to Scissors)
-    private val player2Strategy = mapOf('X' to Rock, 'Y' to Paper, 'Z' to Scissors)
+    private val player1Mapping = mapOf('A' to Rock, 'B' to Paper, 'C' to Scissors)
 
     private data class Round(val player1: Shape, val player2: Shape)
 
-    private fun String.toRound(): Round = Round(player1Strategy[this[0]]!!, player2Strategy[this[2]]!!)
-    private fun List<String>.toRounds(): List<Round> = this.map { it.toRound() }
+    private val thoughtStrategy: (player1: Shape, player2: Char) -> Shape = { _, player2 ->
+        mapOf('X' to Rock, 'Y' to Paper, 'Z' to Scissors)[player2]!!
+    }
+
+    private val elfStrategy: (player1: Shape, player2: Char) -> Shape = { player1, player2 ->
+        when (player2) {
+            'X' -> loseAgainst(player1)
+            'Y' -> player1
+            else -> winAgainst(player1)
+        }
+    }
+
+    private fun loseAgainst(shape: Shape): Shape = winningCombinations.first { r -> r.first == shape }.second
+    private fun winAgainst(shape: Shape) = winningCombinations.first { r -> r.second == shape }.first
+
+    private fun List<String>.toRounds(strategy: (player1: Shape, player2: Char) -> Shape): List<Round> =
+        this.map {
+            player1Mapping[it[0]]!!.let { player1 ->
+                Round(player1, strategy(player1, it[2]))
+            }
+        }
 
     private fun Round.score(): Int = player2.score + outcomeScore()
 
@@ -33,9 +51,15 @@ class Day2 : Day(2, "Rock Paper Scissors") {
     fun part1() =
         assertEquals(14297,
             computeResult {
-                calculateMyScore(
-                    it.toRounds()
-                )
+                calculateMyScore(it.toRounds(thoughtStrategy))
+            }
+        )
+
+    @Test
+    fun part2() =
+        assertEquals(10498,
+            computeResult {
+                calculateMyScore(it.toRounds(elfStrategy))
             }
         )
 }
