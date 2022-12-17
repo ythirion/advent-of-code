@@ -7,6 +7,27 @@ typealias Crates = Stack<Crate>
 typealias Ship = List<Crates>
 
 private data class Step(val size: Int, val from: Int, val to: Int)
+
+private abstract class CrateMover {
+    fun rearrange(ship: Ship, steps: List<Step>): Ship =
+        ship.let {
+            steps.forEach { step -> apply(ship, step) }
+            return it
+        }
+
+    abstract fun apply(ship: Ship, step: Step)
+}
+
+private class CrateMover9000 : CrateMover() {
+    override fun apply(ship: Ship, step: Step) {
+        repeat(step.size) {
+            ship[step.to - 1].push(
+                ship[step.from - 1].pop()
+            )
+        }
+    }
+}
+
 class Day5 : Day(5, "Supply Stacks") {
     private val instructionRegex = Regex("""move (\d+) from (\d+) to (\d+)""")
     private fun List<String>.cratesIndexes(): List<Int> =
@@ -33,33 +54,18 @@ class Day5 : Day(5, "Supply Stacks") {
     private fun String.toSteps(): List<Step> =
         lines().map { it.toInstruction() }
 
-    private fun Ship.applyStep(step: Step): Unit =
-        repeat(step.size) {
-            this[step.to - 1].push(
-                this[step.from - 1].pop()
-            )
-        }
-
-    private fun Ship.rearrange(steps: List<Step>) =
-        steps.forEach { applyStep(it) }
-
-    private fun List<String>.rearrangeShip(): Ship =
+    private fun List<String>.rearrangeShip(crateMover: CrateMover): String =
         Pair(this[0].toShip(), this[1].toSteps())
-            .let { (ship, steps) ->
-                ship.rearrange(steps)
-                return ship
-            }
-
-    private fun Ship.endsUpWith(): String =
-        map { crates -> crates.lastElement() }
+            .let { (ship, steps) -> crateMover.rearrange(ship, steps) }
+            .map { crates -> crates.lastElement() }
             .joinToString("")
+
 
     @Test
     fun part1() =
         assertEquals("ZRLJGSCTR",
             computeStringSeparatedLinesResult {
-                it.rearrangeShip()
-                    .endsUpWith()
+                it.rearrangeShip(CrateMover9000())
             }
         )
 }
