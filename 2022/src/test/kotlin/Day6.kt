@@ -7,9 +7,10 @@ class Day6 : Day(6, "Tuning Trouble") {
         .first { it.areAllCharDifferent() }
 
     private fun String.firstStartOfMarker(): String = firstMarker(4)
+    private fun String.firstStartOfMessageMarker(): String = firstMarker(14)
 
-    private fun String.indexOfFirstStartOfMarker(): Int =
-        firstStartOfMarker().let {
+    private fun String.indexOfFirst(marker: String): Int =
+        marker.let {
             indexOf(it) + it.length
         }
 
@@ -17,7 +18,15 @@ class Day6 : Day(6, "Tuning Trouble") {
     fun part1() =
         assertEquals(1093,
             computeStringResult {
-                it.indexOfFirstStartOfMarker()
+                it.indexOfFirst(it.firstStartOfMarker())
+            }
+        )
+
+    @Test
+    fun part2() =
+        assertEquals(3534,
+            computeStringResult {
+                it.indexOfFirst(it.firstStartOfMessageMarker())
             }
         )
 }
