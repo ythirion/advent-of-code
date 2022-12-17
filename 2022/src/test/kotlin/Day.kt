@@ -99,6 +99,13 @@ abstract class Day(day: Int, name: String) {
 
     protected fun <T> Stack<T>.popIf(t: T): T? = if (last() == t) pop() else null
     protected fun <T> Stack<T>.lastIs(t: T): Boolean = last() == t
+    protected fun <T> List<T>.toStack(): Stack<T> {
+        Stack<T>().let { stack ->
+            forEach { stack.push(it) }
+            return stack
+        }
+    }
+
     protected fun <T> MutableList<T>.add(elements: Collection<T>): List<T> {
         this.addAll(elements)
         return this
