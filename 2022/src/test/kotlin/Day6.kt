@@ -2,13 +2,13 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 class Day6 : Day(6, "Tuning Trouble") {
-    private fun String.firstMarker(): String =
+    private fun String.firstStartOfMarker(): String =
         drop(1)
             .windowed(4, 1)
             .first { it.areAllCharDifferent() }
 
-    private fun String.indexOfFirstMarker(): Int =
-        firstMarker().let {
+    private fun String.indexOfFirstStartOfMarker(): Int =
+        firstStartOfMarker().let {
             indexOf(it) + it.length
         }
 
@@ -16,7 +16,7 @@ class Day6 : Day(6, "Tuning Trouble") {
     fun part1() =
         assertEquals(1093,
             computeStringResult {
-                it.indexOfFirstMarker()
+                it.indexOfFirstStartOfMarker()
             }
         )
 }
