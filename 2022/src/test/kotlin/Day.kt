@@ -67,6 +67,11 @@ abstract class Day(day: Int, name: String) {
     protected fun String.mostCommonChar(): Pair<Char, Int> = this.countChars().maxByOrNull { e -> e.value }?.toPair()!!
     protected fun String.leastCommonChar(): Pair<Char, Int> = this.countChars().minByOrNull { e -> e.value }?.toPair()!!
 
+    protected fun String.areAllCharDifferent(): Boolean =
+        groupingBy { it }
+            .eachCount()
+            .values
+            .all { it == 1 }
     //endregion
 
     //region vavr collections
