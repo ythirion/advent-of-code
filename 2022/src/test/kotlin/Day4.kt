@@ -13,16 +13,37 @@ class Day4 : Day(4, "Camp Cleanup") {
         this.split(",")
             .let { Pair(it[0].toSections(), it[1].toSections()) }
 
-    private fun Elves.areSectionsContained(): Boolean =
+    private fun Elves.areSectionsContain(): Boolean =
         first.intersect(second).size
             .let { it == first.count() || it == second.count() }
+
+    private fun Elves.areSectionsOverlap(): Boolean =
+        first.plus(second)
+            .groupingBy { it }
+            .eachCount()
+            .any { it.value > 1 }
+
+    private fun List<String>.howManyAssignmentPairs(predicate: (Elves) -> Boolean): Int =
+        map { it.toElves() }
+            .count { predicate(it) }
 
     @Test
     fun part1() =
         assertEquals(580,
             computeResult {
-                it.map { line -> line.toElves() }
-                    .count { elves -> elves.areSectionsContained() }
+                it.howManyAssignmentPairs { elves ->
+                    elves.areSectionsContain()
+                }
+            }
+        )
+
+    @Test
+    fun part2() =
+        assertEquals(895,
+            computeResult {
+                it.howManyAssignmentPairs { elves ->
+                    elves.areSectionsOverlap()
+                }
             }
         )
 }
