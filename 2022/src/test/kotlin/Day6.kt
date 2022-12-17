@@ -14,7 +14,7 @@ class Day6 : Day(6, "Tuning Trouble") {
 
     @Test
     fun part1() =
-        assertEquals(5,
+        assertEquals(1093,
             computeStringResult {
                 it.indexOfFirstMarker()
             }
