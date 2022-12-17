@@ -28,6 +28,19 @@ private class CrateMover9000 : CrateMover() {
     }
 }
 
+private class CrateMover9001 : CrateMover() {
+    override fun apply(ship: Ship, step: Step) {
+        ship[step.from - 1]
+            .reversed()
+            .take(step.size)
+            .reversed()
+            .forEach {
+                ship[step.to - 1].push(it)
+                ship[step.from - 1].pop()
+            }
+    }
+}
+
 class Day5 : Day(5, "Supply Stacks") {
     private val instructionRegex = Regex("""move (\d+) from (\d+) to (\d+)""")
     private fun List<String>.cratesIndexes(): List<Int> =
@@ -66,6 +79,14 @@ class Day5 : Day(5, "Supply Stacks") {
         assertEquals("ZRLJGSCTR",
             computeStringSeparatedLinesResult {
                 it.rearrangeShip(CrateMover9000())
+            }
+        )
+
+    @Test
+    fun part2() =
+        assertEquals("PRTTGRFPB",
+            computeStringSeparatedLinesResult {
+                it.rearrangeShip(CrateMover9001())
             }
         )
 }
