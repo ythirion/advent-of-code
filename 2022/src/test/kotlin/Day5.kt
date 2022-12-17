@@ -21,8 +21,8 @@ private abstract class CrateMover {
 private class CrateMover9000 : CrateMover() {
     override fun apply(ship: Ship, step: Step) {
         repeat(step.size) {
-            ship[step.to - 1].push(
-                ship[step.from - 1].pop()
+            ship[step.to].push(
+                ship[step.from].pop()
             )
         }
     }
@@ -30,13 +30,11 @@ private class CrateMover9000 : CrateMover() {
 
 private class CrateMover9001 : CrateMover() {
     override fun apply(ship: Ship, step: Step) {
-        ship[step.from - 1]
-            .reversed()
-            .take(step.size)
-            .reversed()
+        ship[step.from]
+            .takeLast(step.size)
             .forEach {
-                ship[step.to - 1].push(it)
-                ship[step.from - 1].pop()
+                ship[step.to].push(it)
+                ship[step.from].pop()
             }
     }
 }
@@ -62,7 +60,7 @@ class Day5 : Day(5, "Supply Stacks") {
     private fun String.toInstruction(): Step =
         instructionRegex.matchEntire(this)!!
             .destructured
-            .let { (size, from, to) -> Step(size.toInt(), from.toInt(), to.toInt()) }
+            .let { (size, from, to) -> Step(size.toInt(), from.toInt() - 1, to.toInt() - 1) }
 
     private fun String.toSteps(): List<Step> =
         lines().map { it.toInstruction() }
