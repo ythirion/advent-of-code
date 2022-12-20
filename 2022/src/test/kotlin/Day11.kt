@@ -1,38 +1,38 @@
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import java.math.BigInteger.ONE
 
 class Day11 : Day(11, "Monkey in the Middle") {
     private data class Monkey(
         val id: Int,
-        val items: MutableList<Int>,
-        val operation: (Int) -> Int,
+        val items: MutableList<Long>,
+        val operation: (Long) -> Long,
         val divisor: Int,
         val onTrue: Int,
         val onFalse: Int
     ) {
         fun clear(): Unit = items.clear()
-        fun add(item: Int): Boolean = items.add(item)
-        fun throwItemTo(worryLevel: Int): Int = if (worryLevel % divisor == 0) onTrue else onFalse
-        fun worryLevel(item: Int) = operation(item) / 3
+        fun add(item: Long): Boolean = items.add(item)
+        fun throwItemTo(worryLevel: Long): Int = if (worryLevel % divisor == 0L) onTrue else onFalse
     }
 
     private fun String.toId(): Int = splitWords()[1].dropLast(1).toInt()
-    private fun String.toItems(): MutableList<Int> = split(": ")[1]
+    private fun String.toItems(): MutableList<Long> = split(": ")[1]
         .split(", ")
-        .map { item -> item.toInt() }
+        .map { item -> item.toLong() }
         .toMutableList()
 
-    private fun toLambda(operator: String, y: String): (Int) -> Int = { x ->
+    private fun toLambda(operator: String, y: String): (Long) -> Long = { x ->
         when (y) {
             "old" -> compute(operator, x, x)
-            else -> compute(operator, x, y.toInt())
+            else -> compute(operator, x, y.toLong())
         }
     }
 
-    private fun compute(operator: String, x: Int, y: Int): Int =
+    private fun compute(operator: String, x: Long, y: Long): Long =
         if (operator == "+") x + y else x * y
 
-    private fun String.toOperation(): (Int) -> Int = split(": ")[1]
+    private fun String.toOperation(): (Long) -> Long = split(": ")[1]
         .splitWords()
         .let { toLambda(it[3], it[4]) }
 
@@ -52,17 +52,17 @@ class Day11 : Day(11, "Monkey in the Middle") {
     private fun String.toMonkeys(): List<Monkey> =
         splitAtEmptyLine().map { group -> group.splitLines().toMonkey() }
 
-    private fun inspections(monkeys: Int): MutableList<Int> =
-        (0 until monkeys).map { 0 }.toMutableList()
+    private fun inspections(monkeys: Int): MutableList<Long> =
+        (0 until monkeys).map { 0L }.toMutableList()
 
-    private fun List<Monkey>.proceed(rounds: Int): Int {
+    private fun List<Monkey>.proceed(rounds: Int, worryLevel: (Long) -> Long): Long {
         val inspectionByMonkey = inspections(size)
 
         repeat(rounds) {
             forEach { monkey ->
                 monkey.items.forEach { item ->
-                    inspectionByMonkey[monkey.id] += 1
-                    val worryLevel = monkey.worryLevel(item)
+                    inspectionByMonkey[monkey.id] += 1L
+                    val worryLevel = worryLevel(monkey.operation(item))
                     this[monkey.throwItemTo(worryLevel)]
                         .add(worryLevel)
                 }
@@ -74,13 +74,31 @@ class Day11 : Day(11, "Monkey in the Middle") {
             .multiply()
     }
 
+    private fun lowestCommonMultiple(monkeys: List<Monkey>) =
+        monkeys.map { it.divisor.toBigInteger() }
+            .fold(ONE) { acc, i -> (acc * i) / acc.gcd(i) }
+            .toLong()
+
     @Test
     fun part1() {
         assertEquals(
             56120,
             computeStringResult {
                 it.toMonkeys()
-                    .proceed(20)
+                    .proceed(20) { x -> x / 3 }
+            }
+        )
+    }
+
+    @Test
+    fun part2() {
+        assertEquals(
+            2713310158,
+            computeStringResult {
+                it.toMonkeys().let { monkeys ->
+                    val lcm = lowestCommonMultiple(monkeys)
+                    monkeys.proceed(10_000) { x -> x % lcm }
+                }
             }
         )
     }
