@@ -42,6 +42,7 @@ class Day10 : Day(10, "Cathode-Ray Tube") {
                     }
                 }
             }
+            // part 2 here
             println(crt.draw())
 
             return signals
