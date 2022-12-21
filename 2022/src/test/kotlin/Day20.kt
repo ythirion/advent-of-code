@@ -10,24 +10,25 @@ data class Value(val originalValue: Int, val originalIndex: Int) {
 }
 
 class Day20 : Day(20, "Grove Positioning System") {
-    private fun CircularList.move(times: Int, valueSelector: (Value) -> Long): CircularList {
-        val moved = this.toMutableList()
-
-        repeat(times) {
-            this.forEach { currentValue ->
-                val newIndex = newIndex(moved.indexOf(currentValue), valueSelector(currentValue), size)
-                moved.remove(currentValue)
-                moved.add(newIndex, currentValue)
-            }
-        }
-
-        return moved
+    private fun MutableList<Value>.move(v: Value, newIndex: Int) {
+        remove(v)
+        add(newIndex, v)
     }
 
-    private fun newIndex(currentIndex: Int, value: Long, size: Int): Int =
-        circularIndexFor(currentIndex + value, size)
+    private fun CircularList.move(times: Int, valueSelector: (Value) -> Long): CircularList =
+        toMutableList().let { moved ->
+            repeat(times) {
+                this.forEach { currentValue ->
+                    moved.move(
+                        currentValue,
+                        circularIndexFor(moved.indexOf(currentValue) + valueSelector(currentValue))
+                    )
+                }
+            }
+            return moved
+        }
 
-    private fun circularIndexFor(index: Long, size: Int): Int {
+    private fun CircularList.circularIndexFor(index: Long): Int {
         var fixedIndex = index
         var wasNegative = false
 
