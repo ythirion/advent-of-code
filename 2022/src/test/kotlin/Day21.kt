@@ -77,20 +77,20 @@ class Day21 : Day(21, "Monkey Math") {
         }
 
     private fun Monkeys.process(): Long {
-        val root = first { it.name == "root" }
         val observers = toObservers()
 
         filterIsInstance<Yeller>()
             .forEach { it.yell(observers) }
 
-        while (true) {
-            filterIsInstance<Mather>()
-                .forEach { mather ->
-                    if (mather.canYell()) mather.yell(observers)
-                }
+        first { it.name == "root" }.let { root ->
+            while (true) {
+                filterIsInstance<Mather>()
+                    .filter { mather -> mather.canYell() }
+                    .forEach { mather -> mather.yell(observers) }
 
-            if (root.canYell())
-                return root.numberToYell()
+                if (root.canYell())
+                    return root.numberToYell()
+            }
         }
     }
 
