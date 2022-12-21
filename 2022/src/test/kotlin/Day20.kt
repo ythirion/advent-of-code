@@ -1,25 +1,29 @@
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-typealias CircularList = List<IntValue>
+typealias CircularList = List<Value>
 
-data class IntValue(val value: Int, val originalIndex: Int)
+const val decryptionKey = 811589153
+
+data class Value(val originalValue: Int, val originalIndex: Int) {
+    val decryptedValue = originalValue * decryptionKey
+}
 
 class Day20 : Day(20, "Grove Positioning System") {
-    private fun CircularList.move(): CircularList {
+    private fun CircularList.move(valueSelector: (Value) -> Long): CircularList {
         val moved = this.toMutableList()
         this.forEach { currentValue ->
-            val newIndex = newIndex(moved.indexOf(currentValue), currentValue.value, size)
+            val newIndex = newIndex(moved.indexOf(currentValue), valueSelector(currentValue), size)
             moved.remove(currentValue)
             moved.add(newIndex, currentValue)
         }
         return moved
     }
 
-    private fun newIndex(currentIndex: Int, value: Int, size: Int): Int =
+    private fun newIndex(currentIndex: Int, value: Long, size: Int): Int =
         circularIndexFor(currentIndex + value, size)
 
-    private fun circularIndexFor(index: Int, size: Int): Int {
+    private fun circularIndexFor(index: Long, size: Int): Int {
         var fixedIndex = index
         var wasNegative = false
 
@@ -27,17 +31,24 @@ class Day20 : Day(20, "Grove Positioning System") {
             wasNegative = true
             fixedIndex = -fixedIndex
         }
-        val offset = fixedIndex % (size - 1)
+        val offset = (fixedIndex % (size - 1)).toInt()
         return if (wasNegative) size - 1 - offset else offset
     }
 
-    private fun List<String>.toIntValue(): List<IntValue> =
-        mapIndexed { index, value -> IntValue(value.toInt(), index) }
+    private fun List<String>.toIntValue(): List<Value> =
+        mapIndexed { index, value -> Value(value.toInt(), index) }
 
     private fun CircularList.groveValueAt(index: Int): Int =
-        this.indexOfFirst { it.value == 0 }.let { indexOf0 ->
-            return this[(indexOf0 + index) % size].value
+        this.indexOfFirst { it.originalValue == 0 }.let { indexOf0 ->
+            return this[(indexOf0 + index) % size].originalValue
         }
+
+    private fun CircularList.groveCoordinates(): Int =
+        listOf(
+            groveValueAt(1000),
+            groveValueAt(2000),
+            groveValueAt(3000)
+        ).sum()
 
 
     @Test
@@ -46,13 +57,8 @@ class Day20 : Day(20, "Grove Positioning System") {
             3473,
             computeResult {
                 it.toIntValue()
-                    .move().let { result ->
-                        listOf(
-                            result.groveValueAt(1000),
-                            result.groveValueAt(2000),
-                            result.groveValueAt(3000)
-                        ).sum()
-                    }
+                    .move { v -> v.originalValue.toLong() }
+                    .groveCoordinates()
             }
         )
     }
