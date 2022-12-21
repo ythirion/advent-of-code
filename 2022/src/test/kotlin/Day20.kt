@@ -3,20 +3,24 @@ import org.junit.jupiter.api.Test
 
 typealias CircularList = List<Value>
 
-const val decryptionKey = 811589153
+const val decryptionKey = 811589153L
 
 data class Value(val originalValue: Int, val originalIndex: Int) {
     val decryptedValue = originalValue * decryptionKey
 }
 
 class Day20 : Day(20, "Grove Positioning System") {
-    private fun CircularList.move(valueSelector: (Value) -> Long): CircularList {
+    private fun CircularList.move(times: Int, valueSelector: (Value) -> Long): CircularList {
         val moved = this.toMutableList()
-        this.forEach { currentValue ->
-            val newIndex = newIndex(moved.indexOf(currentValue), valueSelector(currentValue), size)
-            moved.remove(currentValue)
-            moved.add(newIndex, currentValue)
+
+        repeat(times) {
+            this.forEach { currentValue ->
+                val newIndex = newIndex(moved.indexOf(currentValue), valueSelector(currentValue), size)
+                moved.remove(currentValue)
+                moved.add(newIndex, currentValue)
+            }
         }
+
         return moved
     }
 
@@ -38,17 +42,17 @@ class Day20 : Day(20, "Grove Positioning System") {
     private fun List<String>.toIntValue(): List<Value> =
         mapIndexed { index, value -> Value(value.toInt(), index) }
 
-    private fun CircularList.groveValueAt(index: Int): Int =
+    private fun CircularList.groveValueAt(index: Int): Value =
         this.indexOfFirst { it.originalValue == 0 }.let { indexOf0 ->
-            return this[(indexOf0 + index) % size].originalValue
+            return this[(indexOf0 + index) % size]
         }
 
-    private fun CircularList.groveCoordinates(): Int =
+    private fun CircularList.groveCoordinates(): List<Value> =
         listOf(
             groveValueAt(1000),
             groveValueAt(2000),
             groveValueAt(3000)
-        ).sum()
+        )
 
 
     @Test
@@ -57,8 +61,22 @@ class Day20 : Day(20, "Grove Positioning System") {
             3473,
             computeResult {
                 it.toIntValue()
-                    .move { v -> v.originalValue.toLong() }
+                    .move(1) { v -> v.originalValue.toLong() }
                     .groveCoordinates()
+                    .sumOf { v -> v.originalValue }
+            }
+        )
+    }
+
+    @Test
+    fun part2() {
+        assertEquals(
+            7496649006261,
+            computeResult {
+                it.toIntValue()
+                    .move(10) { v -> v.decryptedValue }
+                    .groveCoordinates()
+                    .sumOf { v -> v.decryptedValue }
             }
         )
     }
