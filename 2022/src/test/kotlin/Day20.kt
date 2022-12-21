@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.abs
 
 typealias CircularList = List<Value>
 
@@ -16,29 +17,22 @@ class Day20 : Day(20, "Grove Positioning System") {
     }
 
     private fun CircularList.move(times: Int, valueSelector: (Value) -> Long): CircularList =
-        toMutableList().let { moved ->
+        toMutableList().let { movedValues ->
             repeat(times) {
                 this.forEach { currentValue ->
-                    moved.move(
+                    movedValues.move(
                         currentValue,
-                        circularIndexFor(moved.indexOf(currentValue) + valueSelector(currentValue))
+                        circularIndexFor(movedValues.indexOf(currentValue) + valueSelector(currentValue))
                     )
                 }
             }
-            return moved
+            return movedValues
         }
 
-    private fun CircularList.circularIndexFor(index: Long): Int {
-        var fixedIndex = index
-        var wasNegative = false
-
-        if (fixedIndex <= 0) {
-            wasNegative = true
-            fixedIndex = -fixedIndex
+    private fun CircularList.circularIndexFor(calculatedIndex: Long): Int =
+        (abs(calculatedIndex) % (size - 1)).toInt().let { offset ->
+            return if (calculatedIndex <= 0) size - 1 - offset else offset
         }
-        val offset = (fixedIndex % (size - 1)).toInt()
-        return if (wasNegative) size - 1 - offset else offset
-    }
 
     private fun List<String>.toIntValue(): List<Value> =
         mapIndexed { index, value -> Value(value.toInt(), index) }
