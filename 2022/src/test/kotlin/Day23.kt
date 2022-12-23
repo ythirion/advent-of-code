@@ -44,7 +44,8 @@ class Day23 : Day(23, "Unstable Diffusion") {
             whatsAt(direction, elves)
         }
 
-    private fun Map<Direction, Pair<Point2D, Char>>.containsElves(): Boolean = values.any { it.second == elfSymbol }
+    private fun Map<Direction, Pair<Point2D, Char>>.containsElves(): Boolean =
+        values.any { it.second == elfSymbol }
 
     private fun Map.Entry<Point2D, Map<Direction, Pair<Point2D, Char>>>.propose(direction: Direction): Point2D? =
         if (!containsElves(direction)) key.moveTo(direction) else null
@@ -78,48 +79,35 @@ class Day23 : Day(23, "Unstable Diffusion") {
             return strategy
         }
 
-    private fun ElvesLocations.elvesToMove(strategy: Queue<Direction>): Map<Point2D, Point2D> {
+    private fun ElvesLocations.elvesToMove(strategy: Queue<Direction>): Map<Point2D, Point2D> =
         this.associateWith { elf -> elf.adjacent(this) }
             .filter { it.value.containsElves() }.let { elves ->
-                val proposal = elves
-                    .map { elf -> elf.key to elf.proposeFirstValidDirection(strategy) }
+                elves.map { elf -> elf.key to elf.proposeFirstValidDirection(strategy) }
                     .toMap()
-
-                return proposal
-                    .filter { p -> p.value != null && proposal.count { it.value == p.value } == 1 }
-                    .mapValues { v -> v.value!! }
+                    .let { proposal ->
+                        return proposal
+                            .filter { p -> p.value != null && proposal.count { it.value == p.value } == 1 }
+                            .mapValues { v -> v.value!! }
+                    }
             }
-    }
 
-    private fun ElvesLocations.round(times: Int): ElvesLocations {
-        val strategy = LinkedList(listOf(N, S, W, E))
-        var elves = this.toList()
+    private fun ElvesLocations.round(stop: (times: Int, elvesToMove: Int) -> Boolean): Result =
+        LinkedList(listOf(N, S, W, E)).let { strategy ->
+            var elves = this
+            var round = 0
 
-        repeat(times) {
-            val toMove = elves.elvesToMove(strategy)
-            elves = elves.moveElves(toMove)
-            strategy.updateStrategy()
+            do {
+                val toMove = elves.elvesToMove(strategy)
+                elves = elves.moveElves(toMove)
+                strategy.updateStrategy()
+
+                round++
+            } while (!stop(round, toMove.size))
+
+            return Result(round, elves)
         }
-        return elves
-    }
 
-    private fun ElvesLocations.moveElvesUntilNoOneMove(): Int {
-        val strategy = LinkedList(listOf(N, S, W, E))
-        var elves = this.toList()
-        var count = 0
-
-        while (true) {
-            val toMove = elves.elvesToMove(strategy)
-            elves = elves.moveElves(toMove)
-            strategy.updateStrategy()
-            count++
-
-            println("To move = ${toMove.size}")
-
-            if (toMove.isEmpty())
-                return count
-        }
-    }
+    private data class Result(val round: Int, val elves: ElvesLocations)
 
     private fun ElvesLocations.emptyTiles(): Int =
         (maxBy { it.x }.x + 1 + abs(minBy { it.x }.x)) *
@@ -132,7 +120,8 @@ class Day23 : Day(23, "Unstable Diffusion") {
             4146,
             computeResult {
                 it.toElves()
-                    .round(10)
+                    .round { times, _ -> times == 10 }
+                    .elves
                     .emptyTiles()
             }
         )
@@ -144,7 +133,8 @@ class Day23 : Day(23, "Unstable Diffusion") {
             957,
             computeResult {
                 it.toElves()
-                    .moveElvesUntilNoOneMove()
+                    .round { _, elvesToMove -> elvesToMove == 0 }
+                    .round
             }
         )
     }
