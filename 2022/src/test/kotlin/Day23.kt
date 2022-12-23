@@ -72,23 +72,22 @@ class Day23 : Day(23, "Unstable Diffusion") {
             return newElves
         }
 
-    private fun Queue<Direction>.circularDequeue(): Direction =
+    private fun Queue<Direction>.updateStrategy(): Direction =
         this.remove().let { strategy ->
             this.add(strategy)
             return strategy
         }
 
-    private fun ElvesLocations.round(strategy: Queue<Direction>): ElvesLocations {
+    private fun ElvesLocations.elvesToMove(strategy: Queue<Direction>): Map<Point2D, Point2D> {
         this.associateWith { elf -> elf.adjacent(this) }
             .filter { it.value.containsElves() }.let { elves ->
                 val proposal = elves
                     .map { elf -> elf.key to elf.proposeFirstValidDirection(strategy) }
                     .toMap()
 
-                return moveElves(
-                    proposal.filter { p -> p.value != null && proposal.count { it.value == p.value } == 1 }
-                        .mapValues { v -> v.value!! }
-                )
+                return proposal
+                    .filter { p -> p.value != null && proposal.count { it.value == p.value } == 1 }
+                    .mapValues { v -> v.value!! }
             }
     }
 
@@ -97,10 +96,29 @@ class Day23 : Day(23, "Unstable Diffusion") {
         var elves = this.toList()
 
         repeat(times) {
-            elves = elves.round(strategy)
-            strategy.circularDequeue()
+            val toMove = elves.elvesToMove(strategy)
+            elves = elves.moveElves(toMove)
+            strategy.updateStrategy()
         }
         return elves
+    }
+
+    private fun ElvesLocations.moveElvesUntilNoOneMove(): Int {
+        val strategy = LinkedList(listOf(N, S, W, E))
+        var elves = this.toList()
+        var count = 0
+
+        while (true) {
+            val toMove = elves.elvesToMove(strategy)
+            elves = elves.moveElves(toMove)
+            strategy.updateStrategy()
+            count++
+
+            println("To move = ${toMove.size}")
+
+            if (toMove.isEmpty())
+                return count
+        }
     }
 
     private fun ElvesLocations.emptyTiles(): Int =
@@ -111,11 +129,22 @@ class Day23 : Day(23, "Unstable Diffusion") {
     @Test
     fun part1() {
         assertEquals(
-            110,
+            4146,
             computeResult {
                 it.toElves()
                     .round(10)
                     .emptyTiles()
+            }
+        )
+    }
+
+    @Test
+    fun part2() {
+        assertEquals(
+            957,
+            computeResult {
+                it.toElves()
+                    .moveElvesUntilNoOneMove()
             }
         )
     }
