@@ -163,11 +163,11 @@ data class Point2D(val x: Int, val y: Int)
 
 operator fun Point2D.minus(other: Point2D): Point2D = Point2D(x - other.x, y - other.y)
 
-fun List<Point2D>.draw(fill: String = "#"): String =
+fun List<Point2D>.draw(fill: String = "#", empty: String = " "): String =
     mutableListOf<List<String>>().let { crt ->
         (0..maxOf { it.y }).map { y ->
             crt += (0..maxOf { it.x }).map { x ->
-                if (contains(Point2D(x, y))) fill else " "
+                if (contains(Point2D(x, y))) fill else empty
             }
         }
 
