@@ -82,7 +82,7 @@ class Day23 : Day(23, "Unstable Diffusion") {
                     }
             }
 
-    private fun ElvesLocations.round(stop: (times: Int, elvesToMove: Int) -> Boolean): Result =
+    private fun ElvesLocations.round(stop: (times: Int, elvesToMove: Int) -> Boolean): Pair<Int, ElvesLocations> =
         LinkedList(listOf(N, S, W, E)).let { strategy ->
             var elves = this
             var round = 0
@@ -95,10 +95,8 @@ class Day23 : Day(23, "Unstable Diffusion") {
                 round++
             } while (!stop(round, toMove.size))
 
-            return Result(round, elves)
+            return Pair(round, elves)
         }
-
-    private data class Result(val round: Int, val elves: ElvesLocations)
 
     private fun ElvesLocations.emptyTiles(): Int =
         (maxBy { it.x }.x + 1 + abs(minBy { it.x }.x)) *
@@ -111,7 +109,7 @@ class Day23 : Day(23, "Unstable Diffusion") {
             computeResult {
                 it.toElves()
                     .round { times, _ -> times == 10 }
-                    .elves
+                    .second
                     .emptyTiles()
             }
         )
@@ -124,7 +122,7 @@ class Day23 : Day(23, "Unstable Diffusion") {
             computeResult {
                 it.toElves()
                     .round { _, elvesToMove -> elvesToMove == 0 }
-                    .round
+                    .first
             }
         )
     }
