@@ -1,0 +1,8 @@
+[package]
+name = "day1"
+description = "Day 1: Secret Entrance"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+parameterized = "2.0.0"
