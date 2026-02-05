@@ -51,26 +51,12 @@ fn new_password2(instruction: &str, current: i32) -> (i32, i32) {
 }
 
 fn zero_hits(current: i32, delta: i32) -> i32 {
-    if delta == 0 {
-        return 0;
-    }
-
+    if delta == 0 { return 0; }
     let steps = delta.abs();
-    let mut first = if delta > 0 {
-        (100 - current).rem_euclid(100)
-    } else {
-        current.rem_euclid(100)
-    };
+    let mut first = if delta > 0 { (100 - current).rem_euclid(100) } else { current.rem_euclid(100) };
 
-    if first == 0 {
-        first = 100;
-    }
-
-    if first > steps {
-        0
-    } else {
-        1 + (steps - first) / 100
-    }
+    if first == 0 { first = 100; }
+    if first > steps { 0 } else { 1 + (steps - first) / 100 }
 }
 
 
