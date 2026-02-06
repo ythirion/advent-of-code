@@ -21,8 +21,16 @@ mod tests {
     #[test]
     fn invalid_ids_for_part1() {
         assert_eq!(
-            detect_invalid_ids(get_content_as_string("rsc/part1")),
+            detect_invalid_ids(get_content_as_string("rsc/input")),
             5398419778
+        );
+    }
+
+    #[test]
+    fn invalid_ids_for_part2() {
+        assert_eq!(
+            detect_invalid_ids2(get_content_as_string("rsc/input")),
+            15704845910
         );
     }
 }
