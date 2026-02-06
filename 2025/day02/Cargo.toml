@@ -1,0 +1,5 @@
+[package]
+name = "day02"
+description = "Day 2: Gift Shop"
+version = "0.1.0"
+edition = "2024"
